@@ -840,27 +840,25 @@ function bindEwalletDrag() {
     });
 }
 function chooseOnlineBank(bank) {
+    // Update only the existing bank card selection.
+    // Do NOT rebuild #bankArea here: rebuilding it causes the carousel
+    // to flash and jump back to page 1 on mobile.
     state.bank = bank;
-    renderChannels();
+
+    const carousel = document.getElementById("bankGridCarousel");
+    if (carousel) {
+        carousel.querySelectorAll(".bank-grid-item").forEach(item => {
+            const label = item.querySelector("span");
+            const isSelected = label && label.textContent.trim() === bank;
+            item.classList.toggle("selected", isSelected);
+        });
+    }
+
+    // Keep the current carousel page/scroll position exactly where it is.
+    // Only refresh the dependent form/summary content.
     renderSummary();
     renderForm();
     validate();
-
-    // Keep the carousel on the page where the player selected the bank.
-    // renderChannels() rebuilds the carousel, so the browser would otherwise return to page 1.
-    requestAnimationFrame(() => {
-        const carousel = document.getElementById("bankGridCarousel");
-        if (!carousel || window.matchMedia("(max-width: 768px)").matches === false) return;
-
-        const bankIndex = onlineBankOptions.indexOf(bank);
-        if (bankIndex < 0) return;
-
-        const pageIndex = Math.floor(bankIndex / 6);
-        const pageWidth = carousel.clientWidth || 1;
-
-        carousel.scrollLeft = pageIndex * pageWidth;
-        carousel.dispatchEvent(new Event("scroll"));
-    });
 }
 function initBankCarousel() {
     const carousel = document.getElementById("bankGridCarousel");
@@ -870,9 +868,23 @@ function initBankCarousel() {
     const dots = Array.from(document.querySelectorAll("#bankPageDots .bank-page-dot"));
     const updateDots = () => {
         if (!dots.length) return;
-        const pageWidth = carousel.clientWidth || 1;
-        const page = Math.round(carousel.scrollLeft / pageWidth);
-        dots.forEach((dot, index) => dot.classList.toggle("active", index === page));
+        const pages = Array.from(carousel.querySelectorAll(".bank-page"));
+        if (!pages.length) return;
+
+        let activeIndex = 0;
+        let smallestDistance = Infinity;
+
+        pages.forEach((page, index) => {
+            const distance = Math.abs(page.offsetLeft - carousel.scrollLeft);
+            if (distance < smallestDistance) {
+                smallestDistance = distance;
+                activeIndex = index;
+            }
+        });
+
+        dots.forEach((dot, index) => {
+            dot.classList.toggle("active", index === activeIndex);
+        });
     };
 
     carousel.addEventListener("scroll", updateDots, { passive: true });
@@ -1087,7 +1099,7 @@ document.head.appendChild(paymentFormAlignmentStyle);
 
 const terracoinQrStyle = document.createElement("style");
 terracoinQrStyle.textContent =
-    ".terracoin-qr-section{width:100%;box-sizing:border-box;padding:18px 24px}.terracoin-payment-row{display:flex;align-items:center;gap:24px;width:100%}.terracoin-qr-card{display:flex;justify-content:center;align-items:center;flex:0 0 auto}.terracoin-qr-image{margin: 0 auto;width:120px;height:120px;object-fit:contain;display:block;background:#fff;padding:6px;box-sizing:border-box}.terracoin-payment-details{flex:1;min-width:0}.terracoin-to-field{margin:0;display:flex;align-items:center;gap:8px}.terracoin-to-field>span{flex:0 0 auto;margin:0}.terracoin-to-box{flex:1;min-width:0;display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-to-box{display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;border:1px solid #3a4352;border-radius:10px;background:#252932;color:#fff;font:inherit;font-weight:700;padding:12px 14px;box-sizing:border-box;outline:none}.terracoin-account-input::placeholder{color:#fff;font-weight:400;opacity:.7}.terracoin-rate-row{margin-top:12px;display:flex;align-items:center;gap:10px;color:#c5ccd6;font-size:13px}.terracoin-rate-row b{display:inline-block;color:#fff;padding:8px 12px;font-size:13px}@media(max-width:700px){.terracoin-qr-section{padding:16px}.terracoin-payment-row{display:block;width:100%}.terracoin-qr-card{justify-content:flex-start;margin-bottom:16px}.terracoin-qr-image{width:92px;height:92px}.terracoin-payment-details{width:100%}.terracoin-to-box{width:100%;max-width:100%;min-width:0;display:flex!important;align-items:flex-start;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:break-all}.terracoin-rate-row{flex-wrap:wrap}}";
+    ".terracoin-qr-section{width:100%;box-sizing:border-box;padding:18px 24px}.terracoin-payment-row{display:flex;align-items:center;gap:24px;width:100%}.terracoin-qr-card{display:flex;justify-content:center;align-items:center;flex:0 0 auto}.terracoin-qr-image{margin: 0 auto;width:120px;height:120px;object-fit:contain;display:block;background:#fff;padding:6px;box-sizing:border-box}.terracoin-payment-details{flex:1;min-width:0}.terracoin-to-field{margin:0;display:flex;align-items:center;gap:8px}.terracoin-to-field>span{flex:0 0 auto;margin:0}.terracoin-to-box{flex:1;min-width:0;display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-to-box{display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;border:1px solid #3a4352;border-radius:10px;background:#252932;color:#fff;font:inherit;font-weight:700;padding:12px 14px;box-sizing:border-box;outline:none}.terracoin-account-input::placeholder{color:#fff;font-weight:400;opacity:.7}.terracoin-rate-row{margin-top:12px;display:flex;align-items:center;gap:10px;color:#c5ccd6;font-size:13px}.terracoin-rate-row b{display:inline-block;color:#fff;padding:8px 12px;font-size:13px}@media(max-width:700px){.terracoin-qr-section{padding:16px;background: linear-gradient(120deg, #1F1F1F, #111214);border: 1px solid var(--line);border-radius: var(--radius); box-shadow: var(--shadow);}.terracoin-payment-row{display:block;width:100%}.terracoin-qr-card{justify-content:flex-start;margin-bottom:16px}.terracoin-qr-image{width:92px;height:92px}.terracoin-payment-details{width:100%}.terracoin-to-box{width:100%;max-width:100%;min-width:0;display:flex!important;align-items:flex-start;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:break-all}.terracoin-rate-row{flex-wrap:wrap}}";
 document.head.appendChild(terracoinQrStyle);
 
 const packageAmountStyle = document.createElement("style");

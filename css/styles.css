@@ -2434,3 +2434,41 @@ object-fit:contain;
         background: #ead87d;
     }
 }
+
+
+/* Selection-safe bank carousel: each mobile page is exactly one carousel viewport. */
+@media (max-width: 768px) {
+    #bankGridCarousel .bank-pages {
+        width: 100% !important;
+        display: flex !important;
+    }
+    #bankGridCarousel .bank-page {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+}
+
+
+/* Final mobile bank-page consistency:
+   Every carousel page keeps the same 3 x 2 geometry, even when
+   the last page contains only one bank. */
+@media (max-width: 768px) {
+    #bankGridCarousel .bank-page {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        grid-template-rows: repeat(2, 86px) !important;
+        grid-auto-rows: 86px !important;
+        align-content: start !important;
+        align-items: stretch !important;
+        min-height: 182px !important;
+        box-sizing: border-box !important;
+    }
+
+    #bankGridCarousel .bank-grid-item {
+        height: 86px !important;
+        min-height: 86px !important;
+        max-height: 86px !important;
+        align-self: stretch !important;
+        box-sizing: border-box !important;
+    }
+}

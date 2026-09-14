@@ -249,6 +249,7 @@
         border-radius: 10px;
         background: linear-gradient(120deg, #1F1F1F, #111214);
         box-shadow: none;
+        font-size:10px;
     }
 
 @media (max-width:620px) {
