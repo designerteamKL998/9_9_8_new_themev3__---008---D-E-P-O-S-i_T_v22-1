@@ -1,0 +1,89 @@
+﻿<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>998Bet · Deposit Centre</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/asset-styles.css">
+    <link rel="stylesheet" href="css/bank-styles.css">
+</head>
+
+<body>
+    <div class="app-shell">
+        <header class="topbar" style="display:none;">
+            <a class="brand" href="#" aria-label="998Bet home"><img src="assets/menu-icon/logo-998bet.png" /></a>
+            <div class="topbar-actions">
+                <button class="level-chip">Lv. 99</button>
+                <button class="account-chip"><span class="avatar">M</span><span>Hi，998paymentgateway</span></button>
+                <button class="balance-chip">MYR 1448.00</button>
+                <button class="icon-button" aria-label="Change language"><img src="assets/menu-icon/language.svg" /></button>
+                <button class="icon-button" aria-label="Notifications"><img src="assets/menu-icon/notification.svg" /></button>
+                <button class="icon-button" aria-label="Notifications"><img src="assets/menu-icon/logout.svg" /></button>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <aside class="side-nav" aria-label="Main navigation" style="display:none;">
+                <button class="nav-icon active" title="Wallet"><img src="assets/menu-icon/menu.svg" /></button>
+                <button class="nav-icon" title="Home"><img src="assets/menu-icon/home.svg" /></button>
+                <button class="nav-icon" title="Sports"><img src="assets/menu-icon/sports.svg" /></button>
+                <button class="nav-icon" title="Live Casino"><img src="assets/menu-icon/live casino.svg" /></button>
+                <button class="nav-icon" title="Games"><img src="assets/menu-icon/slots.svg" /></button>
+                <button class="nav-icon" title="Lottery"><img src="assets/menu-icon/lottery.svg" /></button>
+                <button class="nav-icon" title="Battle"><img src="assets/menu-icon/battle.svg" /></button>
+                <button class="nav-icon" title="P2P"><img src="assets/menu-icon/p2p.svg" /></button>
+                <button class="nav-icon" title="ESPN"><img src="assets/menu-icon/ESPN.svg" /></button>
+                <button class="nav-icon" title="LALIGA"><img src="assets/menu-icon/laliga.svg" /></button>
+                <button class="nav-icon" title="LIGUE 1"><img src="assets/menu-icon/ligue 1.svg" /></button>
+                <button class="nav-icon" title="SERIES A"><img src="assets/menu-icon/serieA.svg" /></button>
+                <button class="nav-icon" title="BUNDESLIGA"><img src="assets/menu-icon/bundesliga.svg" /></button>
+            </aside>
+            <section class="main-panel">
+                <nav class="quick-nav" style="display:none;">
+                    <a class="active" href="#"><img src="assets/menu-icon/icon-deposit.svg" />Deposit</a>
+                    <a href="#"><img src="assets/menu-icon/icon-withdrawal.svg" />Withdraw</a>
+                    <a href="#"><img src="assets/menu-icon/icon-statement.svg" />Statement</a>
+                    <a href="#"><img src="assets/menu-icon/icon-mybets.svg" />My Bets</a>
+                    <a href="#"><img src="assets/menu-icon/icon-account.svg" />Account</a>
+                    <a href="#"><img src="assets/menu-icon/icon-announcement.svg" />Announcements</a>
+                </nav>
+                <div class="content-container">
+                    <section class="page-heading">
+                        <div><h1>Deposit</h1></div>
+                    </section>
+
+                    <section class="category-tabs" id="categoryTabs" aria-label="Deposit methods"><button class="category-tab " onclick="setMethod('online')">Online Transfer</button><button class="category-tab " onclick="setMethod('qr')">DuitNow QR</button><button class="category-tab active" onclick="setMethod('bank')">Bank In Transfer</button><button class="category-tab " onclick="setMethod('wallet')">E-Wallet</button><button class="category-tab " onclick="setMethod('crypto')">Crypto</button></section>
+
+                    <section class="deposit-layout">
+                        <!-- LEFT SIDE: Package + Payment Channel -->
+                        <div class="channel-area card">
+                            <div id="packageArea"></div>
+
+                            <div class="section-title">
+                                <div>
+                                    <h2 id="channelTitle">Payment channel</h2>
+                                    <p id="channelSubtitle"></p>
+                                </div>
+                                <button class="filter-button hidden" id="filterBtn">⌄ Filter</button>
+                            </div>
+
+                            <div class="filter-row hidden" id="filterRow"></div>
+                            <div class="channel-grid" id="channelGrid"></div>
+                        </div>
+
+                        <!-- RIGHT SIDE: Bank / Network / Amount -->
+                        <div class="form-area">
+                            <div id="bankArea"></div>
+                            <section class="provider-summary card hidden" id="providerSummary"></section>
+                            <section class="dynamic-form card" id="dynamicForm"></section>
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </main>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+    <div class="modal-backdrop hidden" id="modalBackdrop"><section class="modal" id="modal"></section></div>
+    <script src="app.js"></script>
+
+
+</body>

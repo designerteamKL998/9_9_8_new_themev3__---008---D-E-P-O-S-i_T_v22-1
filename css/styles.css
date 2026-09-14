@@ -1,0 +1,2436 @@
+:root{
+    /* Client Brand Colors */
+    --color-primary:#ead87d;
+    --color-secondary:#202228;
+    --color-accent:#ffd700;
+    --color-surface:#121418;
+    --color-text:#ffffff;
+    --color-background:#000000;
+    --color-highlight:#fff1a8;
+    --color-on-primary:#111111;
+    --color-success:#43c07a;
+    --color-error:#ff5b5b;
+    --color-live:#2ee6c6;
+
+    /* Keep your existing variable names for compatibility */
+    --navy:#121418;
+    --navy-2:#202228;
+    --blue:#ead87d;
+    --blue-50:#fff1a8;
+    --ink:#ffffff;
+    --muted:#a8adb8;
+    --line:#353841;
+    --surface:#121418;
+    --bg:#000000;
+    --success:#43c07a;
+    --warning:#ffd700;
+    --danger:#ff5b5b;
+
+    --radius:14px;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: var(--ink);
+    font: 14px/1.45 Inter,"Microsoft YaHei",Arial,sans-serif;
+    background: var(--bg);
+}
+
+button, input, select {
+    font: inherit;
+    color: #fff;
+}
+
+button {
+    cursor: pointer;
+    border: 0;
+}
+
+.app-shell {
+    min-height: 100vh;
+}
+
+.topbar {
+    height: 76px;
+    padding: 0 42px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #fff;
+    background: linear-gradient(112deg,#071024,#0c1730 64%,#12377b);
+    box-shadow: 0 1px 0 rgba(255,255,255,.12);
+}
+
+.brand {
+    position: relative;
+    color: #4d8bf1;
+    text-decoration: none;
+    font-weight: 900;
+    font-size: 30px;
+    font-style: italic;
+    letter-spacing: -2px;
+}
+
+    .brand span {
+        color: #77a7ff;
+    }
+
+    .brand small {
+        display: block;
+        position: absolute;
+        left: 3px;
+        top: 35px;
+        white-space: nowrap;
+        color: #7693c6;
+        font-size: 6px;
+        letter-spacing: .6px;
+        font-style: normal;
+    }
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.level-chip, .account-chip, .balance-chip {
+    height: 44px;
+    border-radius: 24px;
+    color: #eaf2ff;
+    padding: 0 18px;
+    background: linear-gradient(120deg,#245fc3,#1c4f9e);
+    box-shadow: inset 0 1px rgba(255,255,255,.12);
+}
+
+.level-chip {
+    min-width: 80px;
+    color: #172338;
+    font-weight: 800;
+    background: #ffda6b;
+}
+
+.account-chip {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.avatar {
+    background: rgba(255,255,255,.16);
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+}
+
+.icon-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    position: relative;
+    font-size: 21px;
+    color: #d9e9ff;
+    background: transparent;
+}
+
+    .icon-button:hover {
+        background: rgba(255,255,255,.1);
+    }
+
+    .icon-button i {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #ffcf59;
+    }
+
+.workspace {
+    display: flex;
+    min-height: calc(100vh - 76px);
+}
+
+.side-nav {
+    width: 68px;
+    flex: none;
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    flex-direction: column;
+    padding: 15px 0;
+    background: #102b5c;
+}
+
+.nav-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    color: #b9d7ff;
+    font-size: 22px;
+    background: transparent;
+}
+
+    .nav-icon:hover, .nav-icon.active {
+        color: #fff;
+        background: #2b68c7;
+    }
+
+.main-panel {
+    width: calc(100% - 68px);
+}
+
+.quick-nav {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 0 32px;
+    color: #dceaff;
+    background: #112d61;
+}
+
+    .quick-nav a {
+        padding: 10px 13px;
+        border-radius: 8px;
+        color: #dceaff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .quick-nav a img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .quick-nav a:hover, .quick-nav a.active {
+            color: #fff;
+            background: #2b69ce;
+        }
+
+.content-container {
+    max-width: 1260px;
+    margin: auto;
+    padding: 32px;
+}
+
+.page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.eyebrow {
+    margin: 0 0 3px;
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.page-heading h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: -.5px;
+}
+
+.page-heading p:not(.eyebrow) {
+    margin: 5px 0 0;
+    color: var(--muted);
+}
+
+.history-link {
+    color: var(--blue);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+    .history-link span {
+        font-size: 20px;
+        vertical-align: -1px;
+    }
+
+.category-tabs {
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:12px;
+    width:100%;
+    margin:0 0 28px;
+    padding:0;
+    overflow:visible;
+}
+
+.category-tab {
+    position:relative;
+    min-height:80px;
+    padding:16px 12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    align-self:start;
+    border:1px solid #4a4d57;
+    border-radius:10px;
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+    color:var(--color-text,#ffffff);
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+    .category-tab:hover {
+        border-color: var(--color-primary,#ead87d);
+    }
+
+    .category-tab.active {
+        border: 2px solid var(--color-primary,#ead87d);
+        background: linear-gradient(120deg, #2B2924, #111214);
+        min-height: 108px;
+    }
+
+/* Selected payment-method detail stays INSIDE the same card. */
+.category-tab-name {
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.category-tab-detail {
+    display: block;
+    width: 100%;
+    color: var(--color-text, #fff);
+    font-size: 12px;
+    line-height: 0.8;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.category-tab.active .category-tab-detail {
+    color: #ffffff;
+    font-weight: 200;
+}
+
+.deposit-layout {
+    display: grid;
+    grid-template-columns: minmax(350px,.88fr) minmax(480px,1.25fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.card {
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.channel-area {
+    padding: 14px;
+}
+
+.section-title {
+}
+
+    .section-title h2 {
+        font-size: 12px;
+    }
+
+    .section-title p {
+        margin: 5px 0 18px;
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+.filter-button {
+    color: var(--blue);
+    background: transparent;
+    font-weight: 700;
+}
+
+.filter-row {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 16px;
+}
+
+.filter {
+    padding: 6px 10px;
+    border-radius: 18px;
+    background: #f1f5fa;
+    color: #55657a;
+}
+
+    .filter.active {
+        background: #ddecff;
+        color: #145dbe;
+    }
+
+.hidden {
+    display: none !important;
+}
+
+.channel-grid {
+}
+
+.channel-card {
+    min-height: 70px;
+    text-align: left;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: #fff;
+    position: relative;
+    transition: .18s;
+}
+
+    .channel-card:hover {
+        border-color: #8ab6f5;
+        transform: translateY(-1px);
+    }
+
+    .channel-card.selected {
+        border: 2px solid var(--blue);
+        background: var(--blue-50);
+        padding: 13px;
+    }
+
+    .channel-card.disabled {
+        opacity: .52;
+        background: #f6f7f9;
+        cursor: not-allowed;
+    }
+
+.check {
+    display: none;
+    position: absolute;
+    right: 9px;
+    top: 9px;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--blue);
+    place-items: center;
+    font-size: 11px;
+}
+
+.selected .check {
+    display: grid;
+}
+
+.channel-logo {
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: linear-gradient(145deg,#151b2a,#2d5fa7);
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+.channel-name {
+    font-weight: 800;
+    font-size: 13px;
+    margin: 0;
+    text-align: left;
+}
+
+.channel-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+.tag {
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+    .tag.featured {
+        background: #e2f6e9;
+        color: var(--success);
+    }
+
+    .tag.maintenance {
+        background: #fff0d8;
+        color: #a35f00;
+    }
+
+.form-area {
+    display: grid;
+}
+
+.provider-summary {
+    padding: 22px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 18px;
+    align-items: center;
+}
+
+.large-logo {
+    width: 62px;
+    height: 62px;
+    border-radius: 14px;
+    background: linear-gradient(145deg,#102348,#2d74d9);
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 900;
+    font-size: 18px;
+}
+
+.provider-summary h2 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.provider-summary p {
+    margin: 3px 0 0;
+    color: var(--muted);
+}
+
+.summary-list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.summary-pill {
+    padding: 7px 9px;
+    border-radius: 7px;
+    color: #47576e;
+    background: #f0f4f9;
+    font-size: 12px;
+}
+
+    .summary-pill strong {
+        display: block;
+        color: var(--ink);
+        font-size: 13px;
+    }
+
+.dynamic-form {
+    padding: 24px;
+}
+
+.notice {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 21px;
+    border-radius: 9px;
+    background: #fff6df;
+    color: #835b12;
+    font-size: 12px;
+}
+
+    .notice b {
+        font-size: 15px;
+    }
+
+.form-label {
+    display: block;
+    font-weight: 750;
+    font-size:12px;
+}
+
+.required {
+    color: var(--danger);
+}
+
+.amount-wrap {
+    position: relative;
+    margin-top: 10px;
+}
+
+.currency {
+    position: absolute;
+    top: 15px;
+    left: 14px;
+    color: #fff;
+    font-weight: 800;
+}
+
+.amount-wrap input {
+    width: 100%;
+    height: 52px;
+    border-radius: 9px;
+    padding: 0 16px 0 57px;
+    font-size: 18px;
+    font-weight: 700;
+    outline: 0;
+    border: 1px solid #3a4352;
+    border-radius: 10px;
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+}
+}
+
+    .amount-wrap input:focus, .form-control:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(35,116,225,.12);
+    }
+
+    .amount-wrap input.error {
+        border-color: var(--danger);
+    }
+
+.input-help {
+    min-height: 20px;
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+    .input-help.error {
+        color: var(--danger);
+    }
+
+.quick-amounts {
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    gap: 8px;
+    margin: 6px 0 21px;
+}
+
+    .quick-amounts button {
+        height: 38px;
+        border-radius: 7px;
+        color: var(--color-on-primary);
+        background: #eef4fb;
+        font-weight: 700;
+    }
+
+        .quick-amounts button:hover {
+            background: linear-gradient(120deg, #C6A461, #F4D699);
+        }
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 14px 0;
+}
+
+.form-control {
+    width: 100%;
+    height: 46px;
+    padding: 0 13px;
+    border: 1px solid #cfd9e6;
+    border-radius: 8px;
+    outline: 0;
+    background: #fff;
+}
+
+.primary-button {
+    width: 100%;
+    height: 50px;
+    border-radius: 9px;
+    background: linear-gradient(120deg, #C6A461, #F4D699);
+    font-size: 16px;
+    font-weight: 800;
+    box-shadow: 0 7px 14px var(--shadow-color);
+    color: #000;
+}
+
+    .primary-button:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
+    .primary-button:not(:disabled):hover {
+        background: var(--color-secondary);
+        color: #fff1a8;
+        border: 1px solid var(--color-primary);
+    }
+
+.security-copy {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 14px;
+}
+
+.bank-selection {
+}
+
+.bank-select-wrap {
+    position: relative;
+}
+
+.bank-select {
+    width: 100%;
+    height: 46px;
+    padding: 0 38px 0 13px;
+    border: 1px solid #cfd9e6;
+    border-radius: 8px;
+    outline: 0;
+    background: #fff;
+    color: var(--ink);
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.bank-select:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(35,116,225,.12);
+}
+
+.bank-card {
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 19px;
+}
+
+    .bank-card h3 {
+        margin: 0 0 12px;
+        font-size: 14px;
+    }
+
+.account-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+    .account-line span {
+        color: var(--muted);
+    }
+
+.copy-button {
+    border-radius: 6px;
+    padding: 5px 8px;
+    background: #e2efff;
+    color: #1763c4;
+    font-weight: 700;
+}
+
+.stepper {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 22px;
+}
+
+.step {
+    flex: 1;
+    position: relative;
+    color: #718096;
+    font-size: 11px;
+    text-align: center;
+}
+
+    .step::before {
+        content: attr(data-step);
+        display: grid;
+        place-items: center;
+        margin: 0 auto 5px;
+        width: 23px;
+        height: 23px;
+        border-radius: 50%;
+        background: #e8edf4;
+        color: #64748b;
+        font-weight: 800;
+    }
+
+    .step.active {
+        color: var(--blue);
+        font-weight: 700;
+    }
+
+        .step.active::before {
+            background: var(--blue);
+            color: #fff;
+        }
+
+.upload-box {
+    padding: 15px;
+    text-align: center;
+    color: #b0b0b0;
+    font-size: 12px;
+    border: 1px solid #3a4352;
+    border-radius: 10px;
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+}
+
+    .upload-box input {
+        display: none;
+    }
+
+    .upload-box label {
+        display: inline-block;
+        padding: 7px 10px;
+        border-radius: 6px;
+        background: #e7f1ff;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 7px;
+    }
+
+.crypto-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    padding: 14px;
+    border-radius: 9px;
+    background: #f6f9fd;
+    color: #526277;
+    font-size: 12px;
+    margin: 17px 0;
+}
+
+    .crypto-info strong {
+        display: block;
+        color: var(--ink);
+        font-size: 14px;
+        margin-top: 2px;
+    }
+
+.help-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 14px;
+    margin-top: 24px;
+}
+
+.help-card {
+    display: flex;
+    gap: 11px;
+    align-items: center;
+    padding: 14px;
+    border-radius: 11px;
+    background: #fff;
+    border: 1px solid var(--line);
+}
+
+    .help-card p {
+        margin: 2px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+.help-icon {
+    width: 33px;
+    height: 33px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-weight: 900;
+}
+
+    .help-icon.success {
+        color: #138a4e;
+        background: #dcf5e6;
+    }
+
+    .help-icon.warning {
+        color: #aa6c00;
+        background: #fff0d7;
+    }
+
+    .help-icon.blue {
+        color: #1766cb;
+        background: #e3f0ff;
+    }
+
+.toast {
+    position: fixed;
+    z-index: 10;
+    bottom: 24px;
+    left: 50%;
+    transform: translate(-50%,20px);
+    opacity: 0;
+    padding: 11px 16px;
+    border-radius: 8px;
+    color: #fff;
+    background: #172338;
+    box-shadow: var(--shadow);
+    pointer-events: none;
+    transition: .22s;
+}
+
+    .toast.show {
+        opacity: 1;
+        transform: translate(-50%,0);
+    }
+
+.modal-backdrop {
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(4,14,31,.56);
+}
+
+.modal {
+    width: min(520px,100%);
+    padding: 30px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 22px 70px rgba(0,0,0,.35);
+}
+
+    .modal h2 {
+        margin: 0 0 5px;
+    }
+
+    .modal > p {
+        margin: 0 0 20px;
+        color: var(--muted);
+    }
+
+.qr {
+    margin: 23px auto;
+    width: 176px;
+    height: 176px;
+    background: repeating-linear-gradient(90deg,#14233e 0 8px,#fff 8px 13px,#14233e 13px 17px),repeating-linear-gradient(#14233e 0 7px,#fff 7px 12px);
+    border: 10px solid #fff;
+    box-shadow: 0 0 0 1px var(--line);
+}
+
+.payment-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.countdown {
+    color: #bd6414;
+    font-weight: 800;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.secondary-button {
+    height: 48px;
+    padding: 0 16px;
+    border-radius: 9px;
+    background: #edf3fb;
+    color: #26578e;
+    font-weight: 700;
+}
+
+.modal-actions .primary-button {
+    flex: 1;
+}
+
+.network {
+    margin: 14px 0;
+    padding: 11px;
+    border-radius: 8px;
+    color: #9c2c2c;
+    background: #fff0ef;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+@media(max-width:920px) {
+    .deposit-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .provider-summary {
+        grid-template-columns: auto 1fr;
+    }
+
+    .summary-list {
+        grid-column: 1/-1;
+        justify-content: flex-start;
+    }
+
+    .topbar {
+        padding: 0 20px;
+    }
+
+    .side-nav {
+        display: none;
+    }
+
+    .main-panel {
+        width: 100%;
+    }
+
+    .quick-nav {
+        padding: 0 16px;
+        overflow: auto;
+    }
+
+    .content-container {
+        padding: 24px 18px;
+    }
+
+    .category-tabs {
+        grid-template-columns: repeat(3,1fr);
+    }
+}
+
+@media(max-width:620px) {
+    .topbar {
+        height: 65px;
+    }
+
+    .brand {
+        font-size: 25px;
+    }
+
+    .topbar-actions {
+        gap: 4px;
+    }
+
+    .account-chip {
+        width: 38px;
+        padding: 0;
+        justify-content: center;
+    }
+
+        .account-chip > span:last-child, .level-chip, .balance-chip {
+            display: none;
+        }
+
+    .workspace {
+        min-height: calc(100vh - 65px);
+    }
+
+    .quick-nav {
+        height: 55px;
+    }
+
+        .quick-nav a {
+            padding: 8px 10px;
+            font-size: 12px;
+        }
+
+    .page-heading {
+        align-items: flex-end;
+    }
+
+        .page-heading h1 {
+            font-size: 24px;
+        }
+
+        .page-heading p:not(.eyebrow) {
+            display: none;
+        }
+
+    .channel-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .provider-summary {
+        padding: 17px;
+    }
+
+    .dynamic-form, .channel-area {
+        padding: 17px;
+    }
+
+    .quick-amounts {
+        grid-template-columns: repeat(3,1fr);
+    }
+
+    .form-row, .crypto-info {
+        grid-template-columns: 1fr;
+    }
+
+    .help-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .history-link {
+        font-size: 12px;
+    }
+
+    .category-tabs {
+        margin-right: -18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .category-tab {
+        padding: 9px 12px;
+        width: calc((100% - 20px)/3);
+    }
+
+    .section-title p {
+        max-width: 220px;
+    }
+
+    .modal {
+        padding: 22px;
+    }
+
+    .category-tabs {
+        grid-template-columns: repeat(3,1fr);
+        gap: 10px;
+    }
+
+    .category-tab {
+        min-height: 100px;
+        padding: 5px;
+    }
+
+        .category-tab-name, .extra-channel-item,
+        .category-tab span:not(.category-selected),
+        .payment-channel-text-item {
+            font-size: 10px !important;
+        }
+
+    .bank-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+
+    .primary-button {
+        color: #000;
+    }
+
+        .primary-button:not(:disabled):hover {
+            background: none;
+            color: none;
+            border: 0px solid var(--color-primary);
+        }
+}
+
+@media(max-width:400px){
+    .category-tabs{
+        grid-template-columns:1fr;
+    }
+}
+
+
+.category-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 72px;
+}
+
+.category-tab-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.category-tab.active .category-tab-icon{
+     filter:none;
+}
+
+.category-tab.active:nth-child(1) .category-tab-icon,
+.category-tab.active:nth-child(3) .category-tab-icon{
+    filter:brightness(0) invert(1);
+}
+
+.category-tab-name,
+.category-tab span:not(.category-selected){
+    font-size:12px;
+    font-weight:700;
+    text-align:center;
+    color:var(--color-text,#ffffff);
+}
+
+.category-tab.active span{
+    color:var(--color-primary,#ead87d);
+}
+
+/* E-Wallet: 4 payment channels per page with left/right paging */
+.ewallet-channel-page{
+    width:100%;
+    display:flex;
+    align-items:stretch;
+    gap:8px;
+}
+.ewallet-channel-page-grid{
+    flex:1;
+    min-width:0;
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:12px;
+}
+.ewallet-channel-page-grid .channel-card{
+    width:100%;
+    min-width:0;
+}
+.ewallet-page-arrow{
+    width:34px;
+    min-width:34px;
+    border:1px solid #b7d6ff;
+    border-radius:8px;
+    background:#e7f1fd;
+    color:#1a4687;
+    font-size:25px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.ewallet-page-arrow:hover:not(:disabled){
+    background:#d4e7fb;
+}
+.ewallet-page-arrow:disabled{
+    opacity:.35;
+    cursor:default;
+}
+@media(max-width:900px){
+    .ewallet-channel-page-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+}
+
+/* E-Wallet: 2 x 2 channel cards with dot pagination */
+.ewallet-channel-page{
+    width:100%;
+}
+.ewallet-channel-page-grid{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+}
+.ewallet-channel-page-grid .channel-card{
+    width:100%;
+    min-width:0;
+}
+.ewallet-page-dots{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:9px;
+    margin-top:14px;
+}
+.ewallet-page-dot{
+    width:10px;
+    height:10px;
+    padding:0;
+    border:0;
+    border-radius:50%;
+    background:#cbd6e4;
+    cursor:pointer;
+}
+.ewallet-page-dot.active{
+    background:#2f73dc;
+    transform:scale(1.1);
+}
+@media(max-width:560px){
+    .ewallet-channel-page-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+/* FINAL: E-Wallet cards use the exact same card sizing as other channels */
+#channelGrid .ewallet-channel-page-grid .channel-card{
+    min-height:108px;
+    height:108px;
+    padding:14px;
+    box-sizing:border-box;
+}
+#channelGrid .ewallet-channel-page-grid .channel-card.selected{
+    min-height:108px;
+    height:108px;
+    padding:13px;
+}
+#channelGrid .ewallet-channel-page-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+}
+#channelGrid .ewallet-channel-page{
+    width:100%;
+}
+#channelGrid .ewallet-page-dots{
+    margin-top:12px;
+    padding:0;
+}
+
+/* FIX: E-Wallet pagination must span the full channel-grid width */
+#channelGrid .ewallet-channel-page{
+    grid-column:1 / -1;
+    width:100%;
+    min-width:0;
+    box-sizing:border-box;
+}
+
+#channelGrid .ewallet-channel-page-grid{
+    width:100%;
+    min-width:0;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+    box-sizing:border-box;
+}
+
+#channelGrid .ewallet-channel-page-grid .channel-card{
+    width:100%;
+    min-width:0;
+    min-height:108px;
+    height:108px;
+    box-sizing:border-box;
+}
+
+#channelGrid .ewallet-page-dots{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:9px;
+    margin-top:12px;
+    box-sizing:border-box;
+}
+
+/* FINAL CLEAN E-WALLET LAYOUT
+   Use the same .channel-card dimensions as every other flow.
+   Only the grid changes to 2 x 2 and page dots span both columns. */
+#channelGrid.ewallet-paged{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+    width:100%;
+    min-width:0;
+    box-sizing:border-box;
+    align-items:start;
+}
+
+#channelGrid.ewallet-paged > .channel-card{
+    width:100%;
+    min-width:0;
+    min-height:108px;
+    height:108px;
+    box-sizing:border-box;
+    margin:0;
+}
+
+#channelGrid.ewallet-paged > .ewallet-page-dots{
+    grid-column:1 / -1;
+    width:100%;
+    height:16px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:9px;
+    margin:1px 0 0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+#channelGrid.ewallet-paged .ewallet-page-dot{
+    width:9px;
+    height:9px;
+    min-width:9px;
+    padding:0;
+    border:0;
+    border-radius:50%;
+    background:#cbd6e4;
+    box-shadow:none;
+    cursor:pointer;
+}
+
+#channelGrid.ewallet-paged .ewallet-page-dot.active{
+    background:#2f73dc;
+    transform:scale(1.15);
+}
+
+@media(max-width:560px){
+    #channelGrid.ewallet-paged{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+}
+
+/* E-Wallet card sizing: use the exact same sizing as normal .channel-card */
+#channelGrid.ewallet-paged > .channel-card{
+    width:100%;
+    min-width:0;
+    min-height:108px;
+    height:auto;
+    padding:14px;
+    box-sizing:border-box;
+    margin:0;
+    align-self:stretch;
+}
+
+#channelGrid.ewallet-paged > .channel-card.selected{
+    min-height:70px;
+    height:auto;
+    padding:13px;
+    box-sizing:border-box;
+}
+
+/* E-Wallet desktop drag / mobile swipe */
+#channelGrid.ewallet-paged{
+    touch-action:pan-y;
+    user-select:none;
+    cursor:grab;
+}
+#channelGrid.ewallet-paged:active{
+    cursor:grabbing;
+}
+#channelGrid.ewallet-paged .channel-card{
+    -webkit-user-drag:none;
+}
+
+
+/*--------------------deposit package----------------*/
+.deposit-package-selection {
+}
+
+.deposit-package-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.deposit-package-select {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid #b9d0ff;
+    border-radius: 6px;
+    background: #fff;
+    color: #10243f;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.package-placeholder {
+    color: #777;
+}
+
+.package-arrow {
+    color: #627795;
+    font-size: 14px;
+}
+
+.deposit-package-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    bottom: auto;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #d9e2ee;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(20, 50, 90, 0.15);
+    max-height: 240px;
+    overflow-y: auto;
+    z-index: 9999;
+    display: none;
+}
+
+.deposit-package-dropdown.show {
+    display: block;
+}
+
+.deposit-package-item {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 0;
+    background: #fff;
+    color: #10243f;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.deposit-package-item:hover {
+    background: #f1f6ff;
+}
+
+
+.payment-channel-selection{
+width:100%;
+margin-bottom:24px;
+}
+
+.payment-channel-wrap{
+position:relative;
+width:100%;
+}
+
+.payment-channel-select{
+width:100%;
+height:44px;
+padding:0 14px;
+border:1px solid #b9d0ff;
+border-radius:6px;
+background:#fff;
+color:#10243f;
+display:flex;
+align-items:center;
+justify-content:space-between;
+font-size:16px;
+cursor:pointer;
+text-align:left;
+box-sizing:border-box;
+}
+
+.payment-channel-arrow{
+color:#627795;
+font-size:14px;
+}
+
+.payment-channel-dropdown{
+position:absolute;
+top:calc(100% + 4px);
+left:0;
+right:0;
+background:#fff;
+border:1px solid #d9e2ee;
+border-radius:6px;
+box-shadow:0 8px 24px rgba(20,50,90,.15);
+max-height:240px;
+overflow-y:auto;
+z-index:9999;
+display:none;
+}
+
+.payment-channel-dropdown.show{
+display:block;
+}
+
+.payment-channel-item{
+width:100%;
+min-height:52px;
+padding:8px 14px;
+border:0;
+background:#fff;
+color:#10243f;
+display:flex;
+align-items:center;
+gap:12px;
+text-align:left;
+font-size:15px;
+cursor:pointer;
+}
+
+.payment-channel-item:hover{
+background:#f1f6ff;
+}
+
+.payment-channel-item-logo{
+width:40px;
+height:40px;
+display:flex;
+align-items:center;
+justify-content:center;
+flex:0 0 40px;
+}
+
+.payment-channel-item-logo img{
+width:40px;
+height:40px;
+object-fit:contain;
+}
+
+
+/* =========================
+   DEPOSIT BONUS
+========================= */
+
+.deposit-bonus-selection{
+    width:100%;
+    margin-bottom:28px;
+    margin-top:28px;
+}
+
+.deposit-bonus-title{
+    margin-bottom:14px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--color-text,#fff);
+}
+
+.deposit-bonus-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.deposit-bonus-card{
+    width: 100%;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid #343740;
+    border-radius: 10px;
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+    color: var(--color-text, #fff);
+    text-align: left;
+    cursor: pointer;
+    transition: .2s ease;
+    min-height: 62px;
+}
+
+.deposit-bonus-card:hover{
+    border-color:var(--color-primary,#ead87d);
+}
+
+.deposit-bonus-card.selected{
+    border-color:var(--color-primary,#ead87d);
+    background:#3a3a42;
+}
+
+.deposit-bonus-radio{
+    width:16px;
+    height:16px;
+    min-width:16px;
+    margin-top:3px;
+    border:1px solid #555a66;
+    border-radius:50%;
+    box-sizing:border-box;
+}
+
+.deposit-bonus-card.selected .deposit-bonus-radio{
+    border:5px solid var(--color-primary,#ead87d);
+}
+
+.deposit-bonus-content{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    min-width:0;
+}
+
+.deposit-bonus-name{
+    font-size:13px;
+    font-weight:700;
+    color:var(--color-text,#fff);
+}
+
+.deposit-bonus-card.selected .deposit-bonus-name{
+    color:var(--color-highlight,#fff1a8);
+}
+
+.deposit-bonus-subtitle{
+    font-size:13px;
+    font-weight:400;
+    color:#b5b7bf;
+}
+
+
+/* Payment Channel Text Buttons */
+
+.payment-channel-selection{
+    width:100%;
+}
+
+.payment-channel-text-list{
+   display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    width:100%;
+}
+
+.payment-channel-text-item{
+    width:100%;
+    min-width:0;
+    min-height:56px;
+    padding:12px 8px;
+    border:1px solid #454854;
+    border-radius:8px;
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+    color:#ffffff;
+    font-size:14px;
+    font-weight:700;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s ease;
+    position:relative;
+    overflow:hidden;
+}
+
+/*payment channel under maintenance start*/
+.payment-channel-text-item.maintenance{
+    position:relative;
+    cursor:not-allowed;
+    opacity:0.65;
+}
+
+.maintenance-overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    z-index:1;
+    pointer-events:none;
+}
+
+.maintenance-icon{
+    position:absolute;
+    top:8px;
+    left:8px;
+    width:25px;
+    height:25px;
+    object-fit:contain;
+    z-index:3;
+}
+
+.payment-channel-text-item .channel-name{
+    position:relative;
+    z-index:2;
+}
+
+/*payment channel under maintenance end*/
+
+.payment-channel-text-item:hover{
+     border-color:var(--color-primary,#ead87d);
+}
+
+.payment-channel-text-item.selected {
+    border-color: var(--color-primary,#ead87d);
+    color: var(--color-primary,#ead87d);
+    background: linear-gradient(120deg, #2B2924, #111214);
+}
+
+
+
+
+/* ================================
+   ONLINE BANK GRID
+================================ */
+
+.bank-selection {
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 15px;
+}
+
+.bank-grid{
+    display:grid;
+    grid-template-columns:repeat(5, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    padding: 20px 0 0;
+}
+
+.bank-grid-item{
+    min-width:0;
+    padding:12px 6px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+    border:1px solid #454854;
+    border-radius:10px;
+    color:#ffffff;
+    cursor:pointer;
+    font-size:10px;
+    font-weight:700;
+    text-align:center;
+    transition:.2s ease;
+}
+
+.bank-grid-item img{
+    width:38px;
+    height:38px;
+    object-fit:contain;
+    flex-shrink:0;
+}
+
+.bank-grid-item span{
+    width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.bank-grid-item:hover{
+    border-color:var(--color-primary, #ead87d);
+}
+
+.bank-grid-item.selected{
+    border-color:var(--color-primary, #ead87d);
+    color:var(--color-primary, #ead87d);
+    box-shadow:0 0 0 1px var(--color-primary, #ead87d) inset;
+    background: linear-gradient(120deg, #2B2924, #111214);
+}
+
+
+
+/* ================================
+   CRYPTO NETWORK GRID
+================================ */
+
+.crypto-network-selection {
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 15px;
+}
+
+.crypto-network-title{
+    margin-bottom:12px;
+    font-size:12px;
+    font-weight:700;
+    color:#ffffff;
+}
+
+.crypto-network-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:10px;
+    width:100%;
+}
+
+.crypto-network-item {
+    min-width: 0;
+    min-height: 100px;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+    border: 1px solid #454854;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: .2s ease;
+}
+
+.crypto-network-item img{
+    width:40px;
+    height:40px;
+    object-fit:contain;
+}
+
+.crypto-network-item:hover{
+    border-color:var(--color-primary,#ead87d);
+}
+
+.crypto-network-item.selected{
+    border-color:var(--color-primary,#ead87d);
+
+    color:var(--color-primary,#ead87d);
+
+    box-shadow:0 0 0 1px var(--color-primary,#ead87d) inset;
+}
+
+
+
+
+.extra-channel-selection{
+    width:100%;
+    margin-top:20px;
+}
+
+.extra-channel-title{
+    margin-bottom:12px;
+    font-size:12px;
+    font-weight:700;
+    color:#ffffff;
+}
+
+.extra-channel-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+}
+
+.extra-channel-item {
+    min-height: 56px;
+    border: 1px solid #454854;
+    border-radius: 10px;
+    border-radius: 8px;
+    background: linear-gradient(120deg, #1F1F1F, #111214);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    overflow: hidden;
+}
+
+.extra-channel-logo{
+    display:block;
+    width:min(92px, 100%);
+    height:34px;
+    object-fit:contain;
+    object-position:center;
+}
+
+.extra-channel-name{
+    display:block;
+    line-height:1.2;
+}
+
+.extra-channel-item:hover{
+    border-color:var(--color-primary);
+}
+
+.extra-channel-item.selected{
+    border-color:var(--color-primary);
+    color:var(--color-primary);
+    box-shadow:0 0 0 1px var(--color-primary) inset;
+}
+
+
+/* =========================================
+   MOBILE ONLY: Deposit Method - horizontal carousel
+   Show a maximum of 4 methods at once.
+   Swipe/drag horizontally to reveal the 5th method.
+   ========================================= */
+@media (max-width: 620px) {
+    #categoryTabs.category-tabs {
+        display: grid !important;
+        grid-auto-flow: column !important;
+        grid-template-columns: none !important;
+        grid-auto-columns: calc((100% - 24px) / 4) !important;
+        justify-content: start !important;
+        align-items: start;
+        gap: 8px;
+        width: 100%;
+        margin: 0 0 20px !important;
+        padding: 0 0 4px;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        touch-action: pan-x;
+        cursor: grab;
+    }
+
+    #categoryTabs.category-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    #categoryTabs.category-tabs:active {
+        cursor: grabbing;
+    }
+
+    #categoryTabs .category-tab {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 78px;
+        height: auto !important;
+        padding: 7px 4px;
+        gap: 5px;
+        border-radius: 9px;
+        scroll-snap-align: start;
+    }
+
+    #categoryTabs .category-tab-icon {
+        width: 30px;
+        height: 30px;
+        flex: 0 0 auto;
+    }
+
+    #categoryTabs .category-tab-name {
+        font-size: 7px !important;
+        line-height: 1.15;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    #categoryTabs .category-tab-detail {
+        font-size: 9px !important;
+        line-height: 1.1;
+        padding-top: 2px;
+        white-space: nowrap;
+    }
+
+    #categoryTabs .category-tab.active {
+        min-height: 98px;
+    }
+}
+
+/* =========================================================
+   SELECTED CARD STYLE — GOLD BORDER + selected.png BADGE
+   Applies to every selectable card in the deposit UI.
+   ========================================================= */
+.category-tab,
+.channel-card,
+.payment-channel-text-item,
+.payment-channel-item,
+.deposit-bonus-card,
+.bank-grid-item,
+.crypto-network-item,
+.extra-channel-item {
+    position: relative;
+}
+
+    .category-tab.active,
+    .channel-card.selected,
+    .payment-channel-text-item.selected,
+    .payment-channel-item.selected,
+    .deposit-bonus-card.selected,
+    .bank-grid-item.selected,
+    .crypto-network-item.selected,
+    .extra-channel-item.selected {
+        border-color: var(--color-primary, #ead87d) !important;
+        background: linear-gradient(120deg, #2B2924, #111214);
+    }
+
+/* The small selected.png corner badge */
+.category-tab.active::after,
+.channel-card.selected::after,
+.payment-channel-text-item.selected::after,
+.payment-channel-item.selected::after,
+.deposit-bonus-card.selected::after,
+.bank-grid-item.selected::after,
+.crypto-network-item.selected::after,
+.extra-channel-item.selected::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    width: 23px;
+    height: 23px;
+    background: url("../assets/selected.png") center / contain no-repeat;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Keep the badge visible outside the card corner where needed. */
+.category-tab,
+.deposit-bonus-card,
+.bank-grid-item,
+.crypto-network-item,
+.extra-channel-item {
+    overflow: visible;
+}
+
+/* Selected card content should stay below the badge. */
+.category-tab > *,
+.channel-card > *,
+.payment-channel-text-item > *,
+.payment-channel-item > *,
+.deposit-bonus-card > *,
+.bank-grid-item > *,
+.crypto-network-item > *,
+.extra-channel-item > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* selected.png itself is the only selection indicator */
+.channel-card.selected .check,
+.payment-channel-text-item.selected .check,
+.payment-channel-item.selected .check,
+.deposit-bonus-card.selected .check,
+.bank-grid-item.selected .check,
+.crypto-network-item.selected .check,
+.extra-channel-item.selected .check {
+    display: none !important;
+}
+
+
+
+
+/* Selected method detail inside the original payment card */
+@media (max-width: 900px) {
+    .category-tab-detail {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 620px) {
+    .category-tab-detail {
+        font-size: 10px;
+        padding-top: 5px;
+    }
+}
+
+
+/* Inline Continue-button validation */
+.submit-validation {
+    display: none;
+    width: 100%;
+    margin-top: 10px;
+    padding: 9px 12px;
+    border: 1px solid rgba(255, 91, 91, .35);
+    border-radius: 8px;
+    background: rgba(255, 91, 91, .08);
+    color: #ff5b5b;
+    font-size: 12px;
+    line-height: 1.45;
+    text-align: left;
+}
+
+.submit-validation.show {
+    display: block;
+}
+
+.submit-validation-title {
+    font-weight: 800;
+    margin-bottom: 3px;
+}
+
+.submit-validation ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.submit-validation li {
+    margin: 2px 0;
+}
+
+.primary-button:disabled {
+    opacity: 1;
+    cursor: pointer;
+}
+
+
+/* ================================
+   PAYMENT CHANNEL PAGINATION
+   Shows 6 channels per page (3 x 2).
+   Dots appear only when more than 6.
+   Desktop + touch drag/swipe supported.
+================================ */
+.payment-channel-selection{
+    width:100%;
+    margin-bottom:24px;
+    touch-action:pan-y;
+    user-select:none;
+}
+
+.payment-channel-text-list{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-auto-rows:minmax(56px,auto);
+    gap:10px;
+    width:100%;
+}
+
+.payment-channel-dots{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+    width:100%;
+    margin-top:12px;
+}
+
+.payment-channel-dot{
+    width:8px;
+    height:8px;
+    min-width:8px;
+    padding:0;
+    border:1px solid #777b86;
+    border-radius:50%;
+    background:#454854;
+    cursor:pointer;
+    transition:transform .18s ease, background .18s ease, border-color .18s ease;
+}
+
+.payment-channel-dot:hover{
+    border-color:var(--color-primary,#ead87d);
+}
+
+.payment-channel-dot.active{
+    background:var(--color-primary,#ead87d);
+    border-color:var(--color-primary,#ead87d);
+    transform:scale(1.25);
+}
+
+.payment-channel-text-item{
+    user-select:none;
+    -webkit-user-drag:none;
+}
+
+@media(max-width:560px){
+    .payment-channel-text-list{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+}
+
+@media(max-width:380px){
+    .payment-channel-text-list{
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+    }
+}
+
+
+/* Mobile-only package selection behavior:
+   Before selection, show all packages.
+   After selection, show only the selected package.
+   Desktop always shows all packages. */
+@media (max-width: 768px) {
+  #depositPackageSelection .deposit-bonus-card.mobile-package-hidden {
+    display: none !important;
+  }
+}
+
+
+/* Mobile only: allow the player to change the selected package. */
+.change-package-btn {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .change-package-btn {
+        display: block;
+        margin: 12px auto 0;
+        padding: 6px 12px;
+        border: 0;
+        background: transparent;
+        color: #f1d76a;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    .change-package-btn:hover {
+        opacity: 0.85;
+    }
+}
+
+
+/* FINAL MOBILE PAYMENT-METHOD CAROUSEL
+   Exactly 4 cards visible in one horizontal row.
+   The 5th card stays in the same row and is revealed by swipe/drag.
+*/
+@media (max-width: 900px), (pointer: coarse) {
+    #categoryTabs.category-tabs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+        width: 100% !important;
+        margin: 0 0 20px !important;
+        padding: 0 0 4px !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+        scroll-snap-type: x proximity !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-x !important;
+        cursor: grab;
+    }
+
+    #categoryTabs.category-tabs::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    #categoryTabs.category-tabs:active {
+        cursor: grabbing;
+    }
+
+    #categoryTabs.category-tabs > .category-tab {
+        box-sizing: border-box !important;
+        flex: 0 0 calc((100% - 24px) / 4) !important;
+        width: calc((100% - 24px) / 4) !important;
+        min-width: calc((100% - 24px) / 4) !important;
+        max-width: calc((100% - 24px) / 4) !important;
+        min-height: 78px !important;
+        height: auto !important;
+        padding: 7px 4px !important;
+        margin: 0 !important;
+        scroll-snap-align: start !important;
+    }
+}
+
+
+/* =========================================================
+   MOBILE PAYMENT METHOD CAROUSEL
+   Show 4 full cards + a visible "peek" of the 5th card.
+   All 5 remain in ONE horizontal row.
+   ========================================================= */
+@media (max-width: 768px) {
+    #categoryTabs.category-tabs {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        gap: 8px !important;
+        padding-right: 5px !important;
+        box-sizing: border-box !important;
+        scrollbar-width: none !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-x !important;
+        scroll-snap-type: x mandatory !important;
+    }
+
+    #categoryTabs.category-tabs::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    #categoryTabs.category-tabs > .category-tab {
+        box-sizing: border-box !important;
+
+        /* 4 full cards + ~28px visible part of the next card */
+        flex: 0 0 calc((100% - 52px) / 4) !important;
+        width: calc((100% - 52px) / 4) !important;
+        min-width: calc((100% - 52px) / 4) !important;
+        max-width: calc((100% - 52px) / 4) !important;
+
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+        scroll-snap-align: start !important;
+    }
+
+    /* Make the clipped 5th card visibly intentional. */
+    #categoryTabs.category-tabs {
+        padding-left: 0 !important;
+    }
+}
+
+
+/* =========================================================
+   MOBILE BANK CAROUSEL
+   3 columns x 2 rows per swipe page.
+   Desktop keeps the original full bank grid.
+   ========================================================= */
+.bank-pages { display: contents; }
+.bank-page { display: contents; }
+.bank-page-dots { display: none; }
+
+@media (max-width: 768px) {
+    .bank-grid.bank-grid-carousel {
+        display: block !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scroll-snap-type: x mandatory !important;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
+        cursor: grab;
+        padding: 20px 0 4px !important;
+    }
+
+    .bank-grid.bank-grid-carousel::-webkit-scrollbar { display: none; }
+    .bank-grid.bank-grid-carousel.dragging { cursor: grabbing; scroll-behavior: auto; }
+
+    .bank-grid.bank-grid-carousel .bank-pages {
+        display: flex !important;
+        width: 100%;
+    }
+
+    .bank-grid.bank-grid-carousel .bank-page {
+        flex: 0 0 100%;
+        width: 100%;
+        min-width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: repeat(2, auto);
+        gap: 10px;
+        scroll-snap-align: start;
+        box-sizing: border-box;
+    }
+
+    .bank-grid.bank-grid-carousel .bank-grid-item {
+        width: 100%;
+        min-width: 0;
+        min-height: 86px;
+        box-sizing: border-box;
+    }
+
+    .bank-grid.bank-grid-carousel .bank-grid-item img {
+        width: 38px;
+        height: 38px;
+    }
+
+    .bank-grid.bank-grid-carousel .bank-page-dots {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        padding-top: 10px;
+    }
+
+    .bank-grid.bank-grid-carousel .bank-page-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #555b66;
+        transition: .2s ease;
+    }
+
+    .bank-grid.bank-grid-carousel .bank-page-dot.active {
+        width: 18px;
+        border-radius: 10px;
+        background: #ead87d;
+    }
+}
+
+
+/* Keep bank page dots OUTSIDE the horizontal scroller so they stay visible on every page. */
+@media (max-width: 768px) {
+    #bankPageDots.bank-page-dots {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        padding: 10px 0 2px;
+        box-sizing: border-box;
+    }
+
+    #bankPageDots .bank-page-dot {
+        display: block;
+        width: 6px;
+        height: 6px;
+        flex: 0 0 6px;
+        border-radius: 50%;
+        background: #555b66;
+        transition: width .2s ease, background .2s ease;
+    }
+
+    #bankPageDots .bank-page-dot.active {
+        width: 18px;
+        flex-basis: 18px;
+        border-radius: 10px;
+        background: #ead87d;
+    }
+}
