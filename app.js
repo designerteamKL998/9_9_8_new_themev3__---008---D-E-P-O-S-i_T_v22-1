@@ -1090,71 +1090,16 @@ function field(label, content) {
 function amountBlock(c) {
     return `${field(`Amount`, `<div class="amount-wrap"><span class="currency">MYR</span><input id="amount"inputmode="decimal"placeholder="0"value="${state.amount}"oninput="setAmount(this.value)"></div><div id="amountHelp"class="input-help">Per transaction: ${money(c.min)}–${money(c.max)}</div>`)}<div class="quick-amounts">${[20, 50, 100, 200, 500, 1000].map((v) => `<button onclick="quickAmount(${v})">MYR ${v}</button>`).join("")}</div>`;
 }
-const PROMO_CODES = {
-    "WELCOME50": "10% bonus added",
-    "BONUS10": "10% bonus added",
-    "VIP20": "20% bonus added",
-
-    // TEST CODE — for UI testing only
-    "TEST2026": "Test promo accepted"
-};
-
-let promoValidationTimer = null;
-
 function setPromoCode(value) {
-    state.promoCode = value.trim().toUpperCase();
-    clearTimeout(promoValidationTimer);
-
-    if (!state.promoCode) {
-        state.promoCodeStatus = "";
-        updatePromoCodeUI();
-        return;
-    }
-
-    state.promoCodeStatus = "checking";
-    updatePromoCodeUI();
-
-    promoValidationTimer = setTimeout(() => {
-        state.promoCodeStatus = PROMO_CODES[state.promoCode] ? "valid" : "invalid";
-        updatePromoCodeUI();
-    }, 350);
-}
-
-function updatePromoCodeUI() {
-    const input = $("#promoCode");
-    const status = $("#promoCodeStatus");
-    const wrap = $(".promo-code-wrap");
-
-    if (!input || !status || !wrap) return;
-
-    wrap.classList.remove("promo-valid", "promo-invalid", "promo-checking");
-    status.className = "promo-code-status";
-
-    if (state.promoCodeStatus === "checking") {
-        wrap.classList.add("promo-checking");
-        status.classList.add("show", "checking");
-        status.innerHTML = "Checking promo code…";
-    } else if (state.promoCodeStatus === "valid") {
-        wrap.classList.add("promo-valid");
-        status.classList.add("show", "valid");
-        status.innerHTML = `✓ Promo code applied — ${PROMO_CODES[state.promoCode]}`;
-    } else if (state.promoCodeStatus === "invalid") {
-        wrap.classList.add("promo-invalid");
-        status.classList.add("show", "invalid");
-        status.innerHTML = "✕ Invalid promo code. Please check and try again.";
-    } else {
-        status.innerHTML = "";
-    }
+    // Promo codes are entered by the player and handled by the backend.
+    // The UI does not validate, check, or display valid/invalid status.
+    state.promoCode = value;
 }
 
 function promoCodeBlock() {
-    const statusClass =
-        state.promoCodeStatus === "valid" ? "promo-valid" :
-        state.promoCodeStatus === "invalid" ? "promo-invalid" : "";
-
     return `${field(
         "Promo Code",
-        `<div class="promo-code-wrap ${statusClass}">
+        `<div class="promo-code-wrap">
             <input id="promoCode"
                 class="promo-code-input"
                 type="text"
@@ -1162,7 +1107,6 @@ function promoCodeBlock() {
                 value="${state.promoCode}"
                 oninput="setPromoCode(this.value)"
                 autocomplete="off">
-            <div id="promoCodeStatus" class="promo-code-status"></div>
         </div>`
     )}`;
 }
@@ -1208,7 +1152,7 @@ document.head.appendChild(packageAmountStyle);
 
 const promoCodeStyle = document.createElement("style");
 promoCodeStyle.textContent =
-    ".promo-code-wrap{width:100%;margin-bottom:20px; margin-top: 10px;}.promo-code-input{width:100%;height:48px;padding:0 16px;border:1px solid #3a4352;border-radius:10px;background:linear-gradient(120deg, #1F1F1F, #111214);color:#75756c;font:inherit;font-size:12px;box-sizing:border-box;outline:none}.promo-code-input::placeholder{color:#b7bec9}.promo-code-input:focus{border-color:var(--color-primary);box-shadow:0 0 0 2px rgba(255,214,75,.12)}";
+    ".promo-code-wrap{width:100%;margin-bottom:20px; margin-top: 10px;}.promo-code-input{width:100%;height:48px;padding:0 16px;border:1px solid #3a4352;border-radius:10px;background:linear-gradient(120deg, #1F1F1F, #111214);color:#fff;font:inherit;font-size:12px;box-sizing:border-box;outline:none}.promo-code-input::placeholder{color:#b7bec9}.promo-code-input:focus{border-color:var(--color-primary);box-shadow:0 0 0 2px rgba(255,214,75,.12)}";
 document.head.appendChild(promoCodeStyle);
 
 

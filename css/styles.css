@@ -2589,29 +2589,15 @@ object-fit:contain;
     border-color: #ead87d !important;
 }
 
-.promo-code-status {
-    min-height: 0;
-    margin-top: 7px;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.4;
-}
 
-.promo-code-status.show {
-    min-height: 17px;
-}
 
-.promo-code-status.valid {
-    color: #43c07a;
-}
 
-.promo-code-status.invalid {
-    color: #ff5b5b;
-}
 
-.promo-code-status.checking {
-    color: #ead87d;
-}
+
+
+
+
+
 
 
 /* Missing-section guidance after Submit */
