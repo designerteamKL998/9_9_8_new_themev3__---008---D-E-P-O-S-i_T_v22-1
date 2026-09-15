@@ -203,10 +203,10 @@ const depositPackages = [
 
 const packageAmounts = {
     "No Bonus": "",
-    "2% Unlimited Reload Bonus (Free Spin)": "MYR 50",
-    "Unlimited Casino Bonus 15% (MYR)": "MYR 100",
-    "10% Unlimited Slot Reload Bonus (MYR)": "MYR 50",
-    "10% Daily Deposit Bonus-Lottery Only": "MYR 30",
+    "2% Unlimited Reload Bonus (Free Spin)": "MYR 50+",
+    "Unlimited Casino Bonus 15% (MYR)": "MYR 100+",
+    "10% Unlimited Slot Reload Bonus (MYR)": "MYR 50+",
+    "10% Daily Deposit Bonus-Lottery Only": "MYR 30+",
 };
 const bankTransferOptions = [
     "Maybank",
@@ -229,6 +229,7 @@ let state = {
     cryptoNetwork: "",
     walletPayment: "",
     promoCode: "",
+    promoCodeStatus: "",
 };
 const $ = (s) => document.querySelector(s);
 function money(n) {
@@ -793,6 +794,9 @@ function chooseBank(bank){
     renderChannels();
     renderSummary();
     renderForm();
+    // Re-check validation after a bank is selected so any old
+    // missing-bank highlight is removed immediately.
+    validate();
 }
 let ewalletDragStartX = null;
 let ewalletDragStartY = null;
@@ -840,9 +844,12 @@ function bindEwalletDrag() {
     });
 }
 function chooseOnlineBank(bank) {
-    // Update only the existing bank card selection.
-    // Do NOT rebuild #bankArea here: rebuilding it causes the carousel
-    // to flash and jump back to page 1 on mobile.
+    // Keep the existing bank cards and current carousel page.
+    // Selecting a bank must immediately remove the old "missing bank"
+    // validation highlight. Other missing sections are recalculated normally.
+    const oldNotice = $("#submitValidation");
+    const wasAttempted = oldNotice && oldNotice.dataset.attempted === "true";
+
     state.bank = bank;
 
     const carousel = document.getElementById("bankGridCarousel");
@@ -851,13 +858,26 @@ function chooseOnlineBank(bank) {
             const label = item.querySelector("span");
             const isSelected = label && label.textContent.trim() === bank;
             item.classList.toggle("selected", isSelected);
+            item.setAttribute("aria-selected", isSelected ? "true" : "false");
         });
     }
+
+    // The previous validation class belongs to the old state.
+    // Clear it BEFORE renderForm() replaces the validation/Pay To DOM.
+    clearValidationHighlights();
 
     // Keep the current carousel page/scroll position exactly where it is.
     // Only refresh the dependent form/summary content.
     renderSummary();
     renderForm();
+
+    // renderForm() creates a fresh validation notice, so preserve the
+    // player's submit attempt and recalculate which sections are still missing.
+    const newNotice = $("#submitValidation");
+    if (newNotice && wasAttempted) {
+        newNotice.dataset.attempted = "true";
+    }
+
     validate();
 }
 function initBankCarousel() {
@@ -866,6 +886,7 @@ function initBankCarousel() {
     carousel.dataset.bound = "1";
 
     const dots = Array.from(document.querySelectorAll("#bankPageDots .bank-page-dot"));
+
     const updateDots = () => {
         if (!dots.length) return;
         const pages = Array.from(carousel.querySelectorAll(".bank-page"));
@@ -890,32 +911,54 @@ function initBankCarousel() {
     carousel.addEventListener("scroll", updateDots, { passive: true });
     updateDots();
 
-    let dragging = false;
-    let startX = 0;
-    let startScroll = 0;
+    /*
+       IMPORTANT:
+       Bank cards must remain normal clickable buttons on desktop.
+       The old drag handler captured the mouse pointer on the whole
+       carousel, which could prevent the button click from reaching
+       chooseOnlineBank() in desktop browsers.
 
-    carousel.addEventListener("pointerdown", e => {
-        if (e.pointerType === "mouse" && e.button !== 0) return;
-        dragging = true;
-        startX = e.clientX;
-        startScroll = carousel.scrollLeft;
-        carousel.setPointerCapture?.(e.pointerId);
-        carousel.classList.add("dragging");
-    });
-    carousel.addEventListener("pointermove", e => {
-        if (!dragging) return;
-        carousel.scrollLeft = startScroll - (e.clientX - startX);
-    });
-    const stopDrag = e => {
-        if (!dragging) return;
-        dragging = false;
-        carousel.classList.remove("dragging");
-        try { carousel.releasePointerCapture?.(e.pointerId); } catch (_) {}
-    };
-    carousel.addEventListener("pointerup", stopDrag);
-    carousel.addEventListener("pointercancel", stopDrag);
+       Drag-to-swipe is therefore enabled ONLY on touch/mobile.
+       Desktop uses normal button clicks.
+    */
+    if (window.matchMedia("(max-width: 768px)").matches) {
+        let dragging = false;
+        let startX = 0;
+        let startScroll = 0;
+        let moved = false;
+
+        carousel.addEventListener("pointerdown", e => {
+            if (e.pointerType !== "touch") return;
+            dragging = true;
+            moved = false;
+            startX = e.clientX;
+            startScroll = carousel.scrollLeft;
+        });
+
+        carousel.addEventListener("pointermove", e => {
+            if (!dragging || e.pointerType !== "touch") return;
+            const dx = e.clientX - startX;
+
+            if (Math.abs(dx) > 6) moved = true;
+            if (moved) {
+                carousel.scrollLeft = startScroll - dx;
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        const stopDrag = () => {
+            if (!dragging) return;
+            dragging = false;
+            carousel.scrollTo({
+                left: Math.round(carousel.scrollLeft / carousel.clientWidth) * carousel.clientWidth,
+                behavior: "smooth"
+            });
+        };
+
+        carousel.addEventListener("pointerup", stopDrag);
+        carousel.addEventListener("pointercancel", stopDrag);
+    }
 }
-
 function bankAccountDetails() {
     const receivingBank = state.bank || "Alliance";
     const showQR = receivingBank === "Public Bank";
@@ -938,7 +981,7 @@ function bankAccountDetails() {
                         type="text"
                         value="${state.senderAccountName || ""}"
                         placeholder="Full name"
-                        oninput="state.senderAccountName=this.value"
+                        oninput="state.senderAccountName=this.value; validate()"
                         autocomplete="off"
                     >
                 </div>
@@ -1047,23 +1090,79 @@ function field(label, content) {
 function amountBlock(c) {
     return `${field(`Amount`, `<div class="amount-wrap"><span class="currency">MYR</span><input id="amount"inputmode="decimal"placeholder="0"value="${state.amount}"oninput="setAmount(this.value)"></div><div id="amountHelp"class="input-help">Per transaction: ${money(c.min)}–${money(c.max)}</div>`)}<div class="quick-amounts">${[20, 50, 100, 200, 500, 1000].map((v) => `<button onclick="quickAmount(${v})">MYR ${v}</button>`).join("")}</div>`;
 }
+const PROMO_CODES = {
+    "WELCOME50": "10% bonus added",
+    "BONUS10": "10% bonus added",
+    "VIP20": "20% bonus added",
+
+    // TEST CODE — for UI testing only
+    "TEST2026": "Test promo accepted"
+};
+
+let promoValidationTimer = null;
+
 function setPromoCode(value) {
-    state.promoCode = value;
+    state.promoCode = value.trim().toUpperCase();
+    clearTimeout(promoValidationTimer);
+
+    if (!state.promoCode) {
+        state.promoCodeStatus = "";
+        updatePromoCodeUI();
+        return;
+    }
+
+    state.promoCodeStatus = "checking";
+    updatePromoCodeUI();
+
+    promoValidationTimer = setTimeout(() => {
+        state.promoCodeStatus = PROMO_CODES[state.promoCode] ? "valid" : "invalid";
+        updatePromoCodeUI();
+    }, 350);
+}
+
+function updatePromoCodeUI() {
+    const input = $("#promoCode");
+    const status = $("#promoCodeStatus");
+    const wrap = $(".promo-code-wrap");
+
+    if (!input || !status || !wrap) return;
+
+    wrap.classList.remove("promo-valid", "promo-invalid", "promo-checking");
+    status.className = "promo-code-status";
+
+    if (state.promoCodeStatus === "checking") {
+        wrap.classList.add("promo-checking");
+        status.classList.add("show", "checking");
+        status.innerHTML = "Checking promo code…";
+    } else if (state.promoCodeStatus === "valid") {
+        wrap.classList.add("promo-valid");
+        status.classList.add("show", "valid");
+        status.innerHTML = `✓ Promo code applied — ${PROMO_CODES[state.promoCode]}`;
+    } else if (state.promoCodeStatus === "invalid") {
+        wrap.classList.add("promo-invalid");
+        status.classList.add("show", "invalid");
+        status.innerHTML = "✕ Invalid promo code. Please check and try again.";
+    } else {
+        status.innerHTML = "";
+    }
 }
 
 function promoCodeBlock() {
+    const statusClass =
+        state.promoCodeStatus === "valid" ? "promo-valid" :
+        state.promoCodeStatus === "invalid" ? "promo-invalid" : "";
+
     return `${field(
         "Promo Code",
-        `<div class="promo-code-wrap">
-            <input
-                id="promoCode"
+        `<div class="promo-code-wrap ${statusClass}">
+            <input id="promoCode"
                 class="promo-code-input"
                 type="text"
                 placeholder="Have an Exclusive Promo Code?"
                 value="${state.promoCode}"
                 oninput="setPromoCode(this.value)"
-                autocomplete="off"
-            >
+                autocomplete="off">
+            <div id="promoCodeStatus" class="promo-code-status"></div>
         </div>`
     )}`;
 }
@@ -1126,6 +1225,18 @@ const depositPackageStyle = document.createElement("style");
 depositPackageStyle.textContent = `.deposit-package-selection{}.deposit-package-wrap{position:relative;width:100%}.deposit-package-select{width:100%;height:44px;padding:0 14px;border:1px solid #b9d0ff;border-radius:6px;background:#fff;color:#10243f;display:flex;align-items:center;justify-content:space-between;font-size:16px;cursor:pointer;text-align:left;box-sizing:border-box}.package-placeholder{color:#777}.package-arrow{color:#627795;font-size:14px}.deposit-package-dropdown{position:absolute;top:calc(100% + 4px);bottom:auto;left:0;right:0;background:#fff;border:1px solid #d9e2ee;border-radius:6px;box-shadow:0 8px 24px rgba(20,50,90,.15);max-height:240px;overflow-y:auto;z-index:9999;display:none}.deposit-package-dropdown.show{display:block}.deposit-package-item{width:100%;min-height:44px;padding:10px 14px;border:0;background:#fff;color:#10243f;text-align:left;font-size:15px;cursor:pointer}.deposit-package-item:hover{background:#f1f6ff}`;
 document.head.appendChild(depositPackageStyle);
 function setMethod(id) {
+    // Switching Deposit Method starts a fresh validation state.
+    // Remove any red/neon highlight left by the previous method,
+    // including the Amount section.
+    clearValidationHighlights();
+
+    const oldNotice = $("#submitValidation");
+    if (oldNotice) {
+        oldNotice.dataset.attempted = "false";
+        oldNotice.innerHTML = "";
+        oldNotice.classList.remove("show");
+    }
+
     state.method = id;
     state.filter = "all";
     if (id === "wallet") ewalletChannelPage = 0;
@@ -1139,6 +1250,17 @@ function setMethod(id) {
     state.channelSelected = false;
     state.extraChannel = "";
     render();
+
+    // The new payment method must not inherit validation highlights
+    // from the previous payment method.
+    clearValidationHighlights();
+
+    const newNotice = $("#submitValidation");
+    if (newNotice) {
+        newNotice.dataset.attempted = "false";
+        newNotice.innerHTML = "";
+        newNotice.classList.remove("show");
+    }
 }
 function selectChannel(id) {
     if (channels[id].disabled) {
@@ -1195,9 +1317,12 @@ function validateDepositRequirements() {
         }
     }
 
-    // Bank In Transfer: Package + Receiving Bank + Amount
+    // Bank In Transfer: Package + Receiving Bank + Full Name + Amount
     if (state.method === "bank") {
         if (!state.bank) errors.push("Please choose a receiving bank.");
+        if (!String(state.senderAccountName || "").trim()) {
+            errors.push("Please enter your full name.");
+        }
     }
 
     // E-Wallet: Package + Payment Channel + Amount
@@ -1248,6 +1373,79 @@ function validate() {
     }
 }
 
+function getValidationTarget(error) {
+    const text = String(error || "").toLowerCase();
+
+    if (text.includes("package")) return "#depositPackageSelection";
+    if (text.includes("payment channel")) return "#paymentChannelSelection";
+    if (text.includes("receiving bank")) return "#channelGrid";
+    if (text.includes("full name")) return "#bankArea";
+    if (text.includes("choose a bank")) return "#bankArea";
+    if (text.includes("choose a channel")) return "#walletExtraSelection";
+    if (text.includes("crypto network")) return "#cryptoNetworkSelection";
+    if (text.includes("deposit amount") || text.includes("amount must")) return "#amount";
+
+    return "";
+}
+
+function clearValidationHighlights() {
+    document.querySelectorAll(".validation-missing").forEach(el => {
+        el.classList.remove("validation-missing");
+    });
+
+    // Never leave the outer payment form container highlighted.
+    const dynamicForm = $("#dynamicForm");
+    if (dynamicForm) dynamicForm.classList.remove("validation-missing");
+}
+
+function applyValidationHighlights(errors) {
+    clearValidationHighlights();
+
+    if (!errors || !errors.length) return;
+
+    const seen = new Set();
+    errors.forEach(error => {
+        const selector = getValidationTarget(error);
+        if (!selector || seen.has(selector)) return;
+        seen.add(selector);
+
+        const target = $(selector);
+        if (!target) return;
+
+        // Amount is an input; highlight its visible wrapper instead.
+        const highlightTarget = selector === "#amount"
+            ? (target.closest(".amount-wrap") || target)
+            : target;
+
+        highlightTarget.classList.add("validation-missing");
+    });
+}
+
+function focusFirstMissingSection(errors) {
+    if (!errors || !errors.length) return;
+
+    const selector = getValidationTarget(errors[0]);
+    if (!selector) return;
+
+    const target = $(selector);
+    if (!target) return;
+
+    const scrollTarget = selector === "#amount"
+        ? (target.closest(".amount-wrap") || target)
+        : target;
+
+    // On mobile, guide the player directly to the first missing section.
+    // Desktop keeps the full form visible and only highlights the section.
+    if (window.innerWidth <= 768) {
+        setTimeout(() => {
+            scrollTarget.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+        }, 80);
+    }
+}
+
 function renderInlineValidation(errors) {
     const notice = $("#submitValidation");
     if (!notice) return;
@@ -1257,16 +1455,33 @@ function renderInlineValidation(errors) {
     if (!errors || !errors.length) {
         notice.innerHTML = "";
         notice.classList.remove("show");
+        clearValidationHighlights();
         return;
     }
 
     notice.innerHTML = `
-        <div class="submit-validation-title">Please complete the following:</div>
+        <div class="submit-validation-title">⚠ Please complete the following:</div>
         <ul>
-            ${errors.map(error => `<li>${error}</li>`).join("")}
+            ${errors.map(error => {
+                const target = getValidationTarget(error);
+                return `<li>${target ? `<button type="button" class="validation-link" onclick="focusValidationSection('${target}')">${error}</button>` : error}</li>`;
+            }).join("")}
         </ul>
     `;
     notice.classList.add("show");
+    applyValidationHighlights(errors);
+}
+
+function focusValidationSection(selector) {
+    const target = $(selector);
+    if (!target) return;
+
+    const scrollTarget = selector === "#amount"
+        ? (target.closest(".amount-wrap") || target)
+        : target;
+
+    scrollTarget.classList.add("validation-missing");
+    scrollTarget.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function depositReminderStyles() {
@@ -1311,6 +1526,7 @@ function submitDeposit() {
     // Do not use a toast and do not block the button with disabled state.
     if (errors.length) {
         renderInlineValidation(errors);
+        focusFirstMissingSection(errors);
         validate();
         return;
     }
@@ -1443,7 +1659,7 @@ function initDepositHelp() {
     wrap.appendChild(icon);
 }
 const depositHelpStyle = document.createElement("style");
-depositHelpStyle.textContent = `.deposit-title-with-help{display:inline-flex;align-items:center;gap:9px}.deposit-title-with-help h1,.deposit-title-with-help h2,.deposit-title-with-help h3{margin-right:0}.deposit-help{position:relative;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;cursor:help;vertical-align:middle}.deposit-help img{width:22px;height:22px;display:block;cursor: pointer;filter: brightness(0) invert(1);}.deposit-help>span{position:absolute;left:32px;top:50%;transform:translateY(-50%);background:#10243f;color:#fff;padding:7px 11px;border-radius:6px;font-size:13px;font-weight:500;line-height:1.2;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease;z-index:1000}.deposit-help:hover>span{opacity:1;visibility:visible}`;
+depositHelpStyle.textContent = `.deposit-title-with-help{display:inline-flex;align-items:center;gap:9px}.deposit-title-with-help h1,.deposit-title-with-help h2,.deposit-title-with-help h3{margin-right:0}.deposit-help{position:relative;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;cursor:help;vertical-align:middle}.deposit-help img{width:22px;height:22px;display:block;cursor: pointer;filter: brightness(0) invert(1);}.deposit-help>span{position:absolute;left:32px;top:50%;transform:translateY(-50%);background:#baab68;color:#000;padding:7px 11px;border-radius:6px;font-size:13px;font-weight:500;line-height:1.2;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease;z-index:1000}.deposit-help:hover>span{opacity:1;visibility:visible}`;
 document.head.appendChild(depositHelpStyle);
 
 /* Bank In Transfer searchable dropdown */

@@ -38,7 +38,7 @@ body {
     margin: 0;
     color: var(--ink);
     font: 14px/1.45 Inter,"Microsoft YaHei",Arial,sans-serif;
-    background: var(--bg);
+    background: linear-gradient(140deg, #32292A, #111729);
 }
 
 button, input, select {
@@ -329,7 +329,7 @@ button {
     align-items: start;
 }
 
-.card {
+.card, .bank-card {
     background: linear-gradient(120deg, #1F1F1F, #111214);
     border: 1px solid var(--line);
     border-radius: var(--radius);
@@ -702,16 +702,11 @@ button {
 
 .bank-card {
     padding: 16px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    margin-bottom: 19px;
 }
 
     .bank-card h3 {
-        margin: 0 0 12px;
-        font-size: 14px;
+        margin: 6px 0 12px;
+        font-size: 12px;
     }
 
 .account-line {
@@ -778,6 +773,8 @@ button {
     border: 1px solid #3a4352;
     border-radius: 10px;
     background: linear-gradient(120deg, #1F1F1F, #111214);
+    margin-bottom: 20px;
+    margin-top: 10px;
 }
 
     .upload-box input {
@@ -2224,8 +2221,8 @@ object-fit:contain;
         color: #f1d76a;
         font: inherit;
         font-weight: 700;
+        font-size:10px;
         cursor: pointer;
-        text-decoration: underline;
     }
 
     .change-package-btn:hover {
@@ -2471,4 +2468,294 @@ object-fit:contain;
         align-self: stretch !important;
         box-sizing: border-box !important;
     }
+}
+
+
+/* =========================================================
+   PREMIUM GOLD SELECTED EFFECT
+   Uses the existing selected state and selected.png badge.
+   No new components or selection logic.
+   ========================================================= */
+
+/* Payment method selected */
+.category-tab.active {
+    border-color: #ead87d !important;
+    background: linear-gradient(145deg, #302d24 0%, #17181c 58%, #111214 100%) !important;
+    box-shadow:
+        0 0 5px rgba(234, 216, 125, 0.45),
+        0 0 16px rgba(234, 216, 125, 0.18),
+        inset 0 0 12px rgba(234, 216, 125, 0.06) !important;
+}
+
+/* All existing selectable cards */
+.channel-card.selected,
+.payment-channel-text-item.selected,
+.payment-channel-item.selected,
+.deposit-bonus-card.selected,
+.bank-grid-item.selected,
+.crypto-network-item.selected,
+.extra-channel-item.selected {
+    border-color: #ead87d !important;
+    background: linear-gradient(145deg, #302d24 0%, #17181c 58%, #111214 100%) !important;
+    box-shadow:
+        0 0 5px rgba(234, 216, 125, 0.40),
+        0 0 14px rgba(234, 216, 125, 0.16),
+        inset 0 0 10px rgba(234, 216, 125, 0.05) !important;
+}
+
+/* Smooth transition when selection changes */
+.category-tab,
+.channel-card,
+.payment-channel-text-item,
+.payment-channel-item,
+.deposit-bonus-card,
+.bank-grid-item,
+.crypto-network-item,
+.extra-channel-item {
+    transition:
+        border-color .18s ease,
+        background .18s ease,
+        box-shadow .18s ease,
+        transform .18s ease !important;
+}
+
+/* Very subtle press feedback */
+.category-tab:active,
+.channel-card.selected:active,
+.payment-channel-text-item.selected:active,
+.payment-channel-item.selected:active,
+.deposit-bonus-card.selected:active,
+.bank-grid-item.selected:active,
+.crypto-network-item.selected:active,
+.extra-channel-item.selected:active {
+    transform: scale(0.985);
+}
+
+/* =========================================================
+   BANK SELECTION — MATCH PREMIUM GOLD SELECTED STYLE
+   Existing bank cards only; no new component.
+   ========================================================= */
+.bank-grid-item.selected {
+    position: relative !important;
+    border: 1px solid #ead87d !important;
+    color: #ead87d !important;
+    background: linear-gradient(145deg, #302d24 0%, #17181c 58%, #111214 100%) !important;
+    box-shadow:
+        0 0 0 1px rgba(234,216,125,.28) inset,
+        0 0 7px rgba(234,216,125,.38),
+        0 0 18px rgba(234,216,125,.14) !important;
+}
+
+/* Existing selected.png badge for the selected bank */
+.bank-grid-item.selected::after {
+    content: "" !important;
+    position: absolute !important;
+    top: -1px !important;
+    right: -1px !important;
+    width: 23px !important;
+    height: 23px !important;
+    background: url("../assets/selected.png") center / contain no-repeat !important;
+    pointer-events: none !important;
+    z-index: 10 !important;
+}
+
+.bank-grid-item.selected img,
+.bank-grid-item.selected span {
+    position: relative;
+    z-index: 1;
+}
+
+
+/* Promo code validation */
+.promo-code-wrap {
+    position: relative;
+}
+
+.promo-code-input {
+    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.promo-code-wrap.promo-valid .promo-code-input {
+    border-color: #43c07a !important;
+    box-shadow: 0 0 0 2px rgba(67,192,122,.10), 0 0 12px rgba(67,192,122,.10);
+}
+
+.promo-code-wrap.promo-invalid .promo-code-input {
+    border-color: #ff5b5b !important;
+    box-shadow: 0 0 0 2px rgba(255,91,91,.08);
+}
+
+.promo-code-wrap.promo-checking .promo-code-input {
+    border-color: #ead87d !important;
+}
+
+.promo-code-status {
+    min-height: 0;
+    margin-top: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.promo-code-status.show {
+    min-height: 17px;
+}
+
+.promo-code-status.valid {
+    color: #43c07a;
+}
+
+.promo-code-status.invalid {
+    color: #ff5b5b;
+}
+
+.promo-code-status.checking {
+    color: #ead87d;
+}
+
+
+/* Missing-section guidance after Submit */
+.validation-missing {
+    border-color: #ff5b5b !important;
+    box-shadow: 0 0 0 2px rgba(255, 91, 91, .10), 0 0 16px rgba(255, 91, 91, .50) !important;
+    animation: validationPulse .45s ease-out;
+}
+
+.validation-link {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: inherit;
+    font-weight: 600;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    text-align: left;
+}
+
+.validation-link:hover {
+    text-decoration: underline;
+}
+
+@keyframes validationPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.008); }
+    100% { transform: scale(1); }
+}
+
+
+/* Bank cards stay clickable on desktop and mobile. */
+.bank-grid-item {
+    position: relative;
+    pointer-events: auto !important;
+    z-index: 2;
+}
+.bank-grid-carousel,
+.bank-grid-carousel * {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* FINAL VALIDATION EFFECT — use the existing 1px animated neon style */
+.validation-missing {
+    border: 1px solid #ff3b63 !important;
+    background: linear-gradient(180deg, rgba(255,59,99,.045), rgba(255,59,99,.015)) !important;
+    box-shadow:
+        0 0 0 1px rgba(255,59,99,.10),
+        0 0 10px rgba(255,59,99,.22),
+        0 0 22px rgba(255,59,99,.07) !important;
+    animation: neonValidationPulse 1.25s ease-in-out infinite !important;
+}
+
+.validation-missing::before {
+    content: none !important;
+    display: none !important;
+}
+
+.validation-missing input,
+.validation-missing select,
+.validation-missing textarea {
+    border-color: #ff3b63 !important;
+    box-shadow:
+        0 0 0 1px rgba(255,59,99,.10),
+        0 0 10px rgba(255,59,99,.18) !important;
+}
+
+@keyframes neonValidationPulse {
+    0%,100% {
+        border-color: #ff3b63;
+        box-shadow:
+            0 0 0 1px rgba(255,59,99,.08),
+            0 0 7px rgba(255,59,99,.18),
+            0 0 15px rgba(255,59,99,.05);
+    }
+    50% {
+        border-color: #ff6b88;
+        box-shadow:
+            0 0 0 1px rgba(255,59,99,.16),
+            0 0 13px rgba(255,59,99,.38),
+            0 0 27px rgba(255,59,99,.12);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .validation-missing { animation: none !important; }
+}
+
+/* Validation safeguard: the form container itself must never get the
+   red missing-section treatment. Keep validation focused on the actual
+   missing control/section only. */
+.dynamic-form.validation-missing {
+    border-color: var(--line) !important;
+    box-shadow: var(--shadow) !important;
+    background: linear-gradient(120deg, #1F1F1F, #111214) !important;
+    animation: none !important;
+}
+.dynamic-form.validation-missing::before,
+.dynamic-form.validation-missing::after {
+    content: none !important;
+    display: none !important;
+}
+
+
+/* Mobile-only back button for Deposit heading */
+.mobile-back-button {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .page-heading {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        gap: 6px;
+    }
+
+    .mobile-back-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 38px;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        background: transparent;
+        color: #ffffff;
+        cursor: pointer;
+        flex: 0 0 auto;
+    }
+
+        .mobile-back-button img {
+            width: 24px;
+            height: 24px;
+            display: block;
+            filter: brightness(0) invert(1);
+        }
 }

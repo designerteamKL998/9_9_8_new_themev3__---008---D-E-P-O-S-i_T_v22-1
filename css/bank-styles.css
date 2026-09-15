@@ -12,7 +12,7 @@
     display: flex;
     align-items: stretch;
     width: 100%;
-    min-height: 82px;
+    min-height: 90px;
     padding: 8px 12px;
     border: 1px solid #3a4352;
     border-radius: 10px;
@@ -305,6 +305,8 @@
 .bank-payment-details {
     flex: 1;
     min-width: 0;
+    font-size: 12px;
+}
 }
 
 @media (max-width:620px) {
@@ -343,3 +345,65 @@
 }
 
 
+
+
+/* =========================================================
+   RECEIVING BANK — PREMIUM SELECTED STATE
+   These are the existing Maybank / Alliance Bank / Public Bank
+   tiles inside Bank In Transfer. No new component.
+   ========================================================= */
+.bank-option-tabs .bank-tile {
+    position: relative !important;
+    border: 1px solid transparent !important;
+    border-right: 1px solid #3a4352 !important;
+    border-radius: 9px !important;
+    margin: 2px !important;
+    overflow: visible !important;
+    transition:
+        border-color .18s ease,
+        background .18s ease,
+        box-shadow .18s ease,
+        transform .18s ease !important;
+}
+
+.bank-option-tabs .bank-tile:last-child {
+    border-right: 1px solid transparent !important;
+}
+
+.bank-option-tabs .bank-tile.selected {
+    color: #ead87d !important;
+    border: 1px solid #ead87d !important;
+    background: linear-gradient(
+        145deg,
+        #302d24 0%,
+        #17181c 58%,
+        #111214 100%
+    ) !important;
+    box-shadow:
+        0 0 0 1px rgba(234,216,125,.25) inset,
+        0 0 7px rgba(234,216,125,.38),
+        0 0 18px rgba(234,216,125,.14) !important;
+}
+
+/* Existing selected.png badge */
+.bank-option-tabs .bank-tile.selected::after {
+    content: "" !important;
+    position: absolute !important;
+    top: -2px !important;
+    right: -2px !important;
+    width: 23px !important;
+    height: 23px !important;
+    background: url("../assets/selected.png") center / contain no-repeat !important;
+    pointer-events: none !important;
+    z-index: 20 !important;
+}
+
+.bank-option-tabs .bank-tile.selected img,
+.bank-option-tabs .bank-tile.selected span {
+    position: relative;
+    z-index: 2;
+}
+
+.bank-option-tabs .bank-tile:active {
+    transform: scale(.985);
+}
