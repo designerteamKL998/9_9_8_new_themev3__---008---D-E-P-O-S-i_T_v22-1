@@ -3136,3 +3136,121 @@ button,
     font-size: 11px;
   }
 }
+
+/* Deposit reference image: keep Amount panel on the right on desktop */
+@media (min-width: 921px) {
+  .deposit-layout {
+    grid-template-columns: minmax(430px, 1fr) minmax(560px, 1.08fr);
+    align-items: start;
+  }
+  .form-area { min-width: 0; }
+  .dynamic-form { min-height: 320px; box-sizing: border-box; }
+}
+
+/* Amount value is easy to scan, matching the reference design. */
+.amount-wrap input { text-align: left; }
+
+/* Final QA: initial Deposit page right-side Amount panel */
+@media (min-width: 921px) {
+  .deposit-layout {
+    display: grid !important;
+    grid-template-columns: minmax(350px, .88fr) minmax(480px, 1.25fr) !important;
+    align-items: start !important;
+  }
+  .form-area {
+    display: block !important;
+    min-width: 0;
+  }
+  #dynamicForm {
+    display: block !important;
+    min-height: 320px;
+    box-sizing: border-box;
+  }
+}
+
+
+/* DEFAULT DEPOSIT: keep Amount visible on the right before channel selection */
+@media (min-width: 769px) {
+  .deposit-layout {
+    display: grid !important;
+    grid-template-columns: minmax(350px, 0.88fr) minmax(480px, 1.25fr) !important;
+    align-items: start !important;
+  }
+
+  .form-area,
+  #dynamicForm {
+    display: block !important;
+    visibility: visible !important;
+  }
+}
+
+
+/* Bank In Transfer QA: receiving bank selector */
+#receivingBankSelection {
+  width: 100%;
+}
+#receivingBankSelection .bank-page {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+#receivingBankSelection .bank-grid-item {
+  min-height: 86px;
+}
+@media (max-width: 768px) {
+  #receivingBankSelection .bank-page {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  #receivingBankSelection .bank-grid-item {
+    min-height: 76px;
+  }
+}
+
+
+/* Final Bank In Transfer layout */
+.bank-selector {
+  width: 100%;
+}
+.bank-option-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+.bank-tile {
+  min-width: 0;
+  min-height: 82px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  box-sizing: border-box;
+}
+.bank-tile img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+.bank-tile span {
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: center;
+}
+.bank-helper {
+  margin: 10px 0 0;
+  font-size: 11px;
+}
+@media (max-width: 768px) {
+  .bank-option-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .bank-tile {
+    min-height: 76px;
+  }
+  .bank-tile img {
+    width: 30px;
+    height: 30px;
+  }
+}
