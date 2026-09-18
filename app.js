@@ -1,3 +1,165 @@
+/* =========================================================
+   QR CODE PREVIEW — initialized BEFORE the rest of the app
+   so a runtime error elsewhere cannot prevent QR clicking.
+   ========================================================= */
+(function () {
+    const css = document.createElement("style");
+    css.textContent = `
+        .qr-clickable {
+            cursor: zoom-in !important;
+            pointer-events: auto !important;
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: rgba(234,216,125,.25);
+        }
+        .qr-preview-overlay {
+            position: fixed !important;
+            inset: 0 !important;
+            z-index: 2147483647 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 20px !important;
+            background: rgba(0,0,0,.88) !important;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .18s ease, visibility .18s ease;
+        }
+        .qr-preview-overlay.is-open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        .qr-preview-box {
+            position: relative !important;
+            width: min(92vw, 500px) !important;
+            padding: 22px !important;
+            box-sizing: border-box !important;
+            border: 1px solid #ead87d !important;
+            border-radius: 18px !important;
+            background: #17181c !important;
+            box-shadow: 0 24px 80px rgba(0,0,0,.65) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+        }
+        .qr-preview-title {
+            width: 80%;
+            margin: 0 42px 14px 0;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 700;
+        }
+        .qr-preview-image {
+            display: block !important;
+            width: min(78vw, 420px) !important;
+            height: min(78vw, 420px) !important;
+            max-width: 76vh !important;
+            max-height: 76vh !important;
+            padding: 10px !important;
+            box-sizing: border-box !important;
+            object-fit: contain !important;
+            background: #fff !important;
+            border-radius: 8px !important;
+        }
+        .qr-preview-close {
+            position: absolute !important;
+            top: 10px !important;
+            right: 10px !important;
+            width: 38px !important;
+            height: 38px !important;
+            border: 1px solid #48505d !important;
+            border-radius: 50% !important;
+            background: #202228 !important;
+            color: #fff !important;
+            font-size: 24px !important;
+            line-height: 1 !important;
+            cursor: pointer !important;
+        }
+        .qr-preview-hint {
+            margin-top: 12px;
+            color: #cbd1dc;
+            font-size: 12px;
+            text-align: center;
+        }
+        body.qr-preview-open { overflow: hidden !important; }
+        @media (max-width: 600px) {
+            .qr-preview-overlay { padding: 12px !important; }
+            .qr-preview-box { width: 94vw !important; padding: 16px !important; }
+            .qr-preview-image {
+                width: min(84vw, 380px) !important;
+                height: min(84vw, 380px) !important;
+                max-width: 78vh !important;
+                max-height: 78vh !important;
+                padding: 8px !important;
+            }
+            .qr-preview-title { font-size: 16px; margin-bottom: 10px; }
+        }
+    `;
+    document.head.appendChild(css);
+
+    let overlay = null;
+    let preview = null;
+    let previousFocus = null;
+
+    function ensurePopup() {
+        if (overlay && document.body.contains(overlay)) return;
+        overlay = document.createElement("div");
+        overlay.className = "qr-preview-overlay";
+        overlay.setAttribute("aria-hidden", "true");
+        overlay.innerHTML = `
+            <div class="qr-preview-box" role="dialog" aria-modal="true" aria-label="QR code preview">
+                <button type="button" class="qr-preview-close" aria-label="Close QR code preview">×</button>
+                <div class="qr-preview-title">Scan QR Code</div>
+                <img class="qr-preview-image" alt="Enlarged payment QR code">
+                <div class="qr-preview-hint">Use your banking app to scan this QR code</div>
+            </div>`;
+        document.body.appendChild(overlay);
+        preview = overlay.querySelector(".qr-preview-image");
+        overlay.querySelector(".qr-preview-close").addEventListener("click", function (e) {
+            e.stopPropagation();
+            close();
+        });
+        overlay.addEventListener("click", function (e) {
+            if (e.target === overlay) close();
+        });
+    }
+
+    window.openPaymentQr = function (image) {
+        if (!image) return;
+        ensurePopup();
+        const src = image.currentSrc || image.src || image.getAttribute("src");
+        if (!src) return;
+        previousFocus = document.activeElement;
+        preview.src = src;
+        preview.alt = image.alt || "Enlarged payment QR code";
+        overlay.classList.add("is-open");
+        overlay.setAttribute("aria-hidden", "false");
+        document.body.classList.add("qr-preview-open");
+        setTimeout(function () {
+            const closeButton = overlay.querySelector(".qr-preview-close");
+            if (closeButton) closeButton.focus();
+        }, 0);
+    };
+
+    window.closePaymentQr = close;
+
+    function close() {
+        if (!overlay) return;
+        overlay.classList.remove("is-open");
+        overlay.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("qr-preview-open");
+        setTimeout(function () {
+            if (overlay && !overlay.classList.contains("is-open") && preview) preview.removeAttribute("src");
+        }, 180);
+        if (previousFocus && document.contains(previousFocus)) previousFocus.focus();
+    }
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && overlay && overlay.classList.contains("is-open")) close();
+    });
+})();
+
 const methods = {
     online: { label: "Online Transfer", channels: ["vaderpay","vaderpayc2","payessence","bigpayz", "sklpay", "payjom"] },
     qr: { label: "DuitNow QR", channels: ["vaderpayc1", "vaderpayc2", "eziepayqr"] },
@@ -552,7 +714,7 @@ function renderChannels() {
                 <div id="terracoinQrSection" class="terracoin-qr-section">
                     <div class="terracoin-payment-row">
                         <div class="terracoin-qr-card">
-                            <img src="assets/QRcode.jpg" alt="TERRACOIN QR Code" class="terracoin-qr-image">
+                            <img src="assets/QRcode.jpg" alt="TERRACOIN QR Code" class="terracoin-qr-image qr-clickable" role="button" tabindex="0" aria-label="Tap to enlarge QR code" onclick="event.stopPropagation();window.openPaymentQr(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();window.openPaymentQr(this)}">
                         </div>
 
                         <div class="terracoin-payment-details">
@@ -847,8 +1009,7 @@ function chooseOnlineBank(bank) {
     // Keep the existing bank cards and current carousel page.
     // Selecting a bank must immediately remove the old "missing bank"
     // validation highlight. Other missing sections are recalculated normally.
-    const oldNotice = $("#submitValidation");
-    const wasAttempted = oldNotice && oldNotice.dataset.attempted === "true";
+    const wasAttempted = document.body.dataset.validationAttempted === "true";
 
     state.bank = bank;
 
@@ -871,11 +1032,9 @@ function chooseOnlineBank(bank) {
     renderSummary();
     renderForm();
 
-    // renderForm() creates a fresh validation notice, so preserve the
-    // player's submit attempt and recalculate which sections are still missing.
-    const newNotice = $("#submitValidation");
-    if (newNotice && wasAttempted) {
-        newNotice.dataset.attempted = "true";
+    // Preserve the player's validation attempt after the form is re-rendered.
+    if (wasAttempted) {
+        document.body.dataset.validationAttempted = "true";
     }
 
     validate();
@@ -969,7 +1128,7 @@ function bankAccountDetails() {
         <div class="bank-payment-content">
             ${showQR ? `
             <div class="bank-payment-qr">
-                <img src="assets/QRcode.jpg" alt="Public Bank Payment QR Code">
+                <img src="assets/QRcode.jpg" alt="Public Bank Payment QR Code" class="qr-clickable" role="button" tabindex="0" aria-label="Tap to enlarge QR code" onclick="event.stopPropagation();window.openPaymentQr(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();event.stopPropagation();window.openPaymentQr(this)}">
             </div>
             ` : ""}
 
@@ -1131,8 +1290,7 @@ function renderForm() {
               ? "Continue"
               : `Continue with ${c.name}`;
     $("#dynamicForm").innerHTML =
-        `${specific}${promoCodeBlock()}<button id="submitBtn" type="button" class="primary-button" onclick="submitDeposit()">${label}</button>
-        <div id="submitValidation" class="submit-validation" role="alert" aria-live="polite"></div>`;
+        `${specific}${promoCodeBlock()}<button id="submitBtn" type="button" class="primary-button" onclick="submitDeposit()">${label}</button>`;
     validate();
 }
 const paymentFormAlignmentStyle = document.createElement("style");
@@ -1142,7 +1300,7 @@ document.head.appendChild(paymentFormAlignmentStyle);
 
 const terracoinQrStyle = document.createElement("style");
 terracoinQrStyle.textContent =
-    ".terracoin-qr-section{width:100%;box-sizing:border-box;padding:18px 24px;background: linear-gradient(120deg, #1F1F1F, #111214);    border: 1px solid var(--line);    border-radius: var(--radius);    box-shadow: var(--shadow);    margin-bottom: 16px;}.terracoin-payment-row{display:flex;align-items:center;gap:24px;width:100%}.terracoin-qr-card{display:flex;justify-content:center;align-items:center;flex:0 0 auto}.terracoin-qr-image{margin: 0 auto;width:120px;height:120px;object-fit:contain;display:block;background:#fff;padding:6px;box-sizing:border-box}.terracoin-payment-details{flex:1;min-width:0}.terracoin-to-field{margin:0;display:flex;align-items:center;gap:8px}.terracoin-to-field>span{flex:0 0 auto;margin:0}.terracoin-to-box{flex:1;min-width:0;display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-to-box{display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;border:1px solid #3a4352;border-radius:10px;background:#252932;color:#fff;font:inherit;font-weight:700;padding:12px 14px;box-sizing:border-box;outline:none}.terracoin-account-input::placeholder{color:#fff;font-weight:400;opacity:.7}.terracoin-rate-row{margin-top:12px;display:flex;align-items:center;gap:10px;color:#c5ccd6;font-size:13px}.terracoin-rate-row b{display:inline-block;color:#fff;padding:8px 12px;font-size:13px}@media(max-width:700px){.terracoin-qr-section{padding:16px;background: linear-gradient(120deg, #1F1F1F, #111214);border: 1px solid var(--line);border-radius: var(--radius); box-shadow: var(--shadow);}.terracoin-payment-row{display:block;width:100%}.terracoin-qr-card{justify-content:flex-start;margin-bottom:16px}.terracoin-qr-image{width:92px;height:92px}.terracoin-payment-details{width:100%}.terracoin-to-box{width:100%;max-width:100%;min-width:0;display:flex!important;align-items:flex-start;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:break-all}.terracoin-rate-row{flex-wrap:wrap}}";
+    ".terracoin-qr-section{width:100%;box-sizing:border-box;padding:18px 24px;background: linear-gradient(120deg, #1F1F1F, #111214);    border: 1px solid var(--line);    border-radius: var(--radius);    box-shadow: var(--shadow);    margin-bottom: 16px;}.terracoin-payment-row{display:flex;align-items:center;gap:24px;width:100%}.terracoin-qr-card{display:flex;justify-content:center;align-items:center;flex:0 0 auto}.terracoin-qr-image{margin: 0 auto;width:120px;height:120px;object-fit:contain;display:block;background:#fff;padding:6px;box-sizing:border-box}.terracoin-payment-details{flex:1;min-width:0}.terracoin-to-field{margin:0;display:flex;align-items:center;gap:8px}.terracoin-to-field>span{flex:0 0 auto;margin:0}.terracoin-to-box{flex:1;min-width:0;display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-to-box{display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;border:1px solid #3a4352;border-radius:10px;background:#252932;color:#fff;font:inherit;font-weight:700;font-size:16px;padding:12px 14px;box-sizing:border-box;outline:none}.terracoin-account-input::placeholder{color:#fff;font-weight:400;opacity:.7}.terracoin-rate-row{margin-top:12px;display:flex;align-items:center;gap:10px;color:#c5ccd6;font-size:13px}.terracoin-rate-row b{display:inline-block;color:#fff;padding:8px 12px;font-size:13px}@media(max-width:700px){.terracoin-qr-section{padding:16px;background: linear-gradient(120deg, #1F1F1F, #111214);border: 1px solid var(--line);border-radius: var(--radius); box-shadow: var(--shadow);}.terracoin-payment-row{display:block;width:100%}.terracoin-qr-card{justify-content:flex-start;margin-bottom:16px}.terracoin-qr-image{width:92px;height:92px}.terracoin-payment-details{width:100%}.terracoin-to-box{width:100%;max-width:100%;min-width:0;display:flex!important;align-items:flex-start;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:break-all}.terracoin-rate-row{flex-wrap:wrap}}";
 document.head.appendChild(terracoinQrStyle);
 
 const packageAmountStyle = document.createElement("style");
@@ -1152,7 +1310,7 @@ document.head.appendChild(packageAmountStyle);
 
 const promoCodeStyle = document.createElement("style");
 promoCodeStyle.textContent =
-    ".promo-code-wrap{width:100%;margin-bottom:20px; margin-top: 10px;}.promo-code-input{width:100%;height:48px;padding:0 16px;border:1px solid #3a4352;border-radius:10px;background:linear-gradient(120deg, #1F1F1F, #111214);color:#fff;font:inherit;font-size:12px;box-sizing:border-box;outline:none}.promo-code-input::placeholder{color:#b7bec9}.promo-code-input:focus{border-color:var(--color-primary);box-shadow:0 0 0 2px rgba(255,214,75,.12)}";
+    ".promo-code-wrap{width:100%;margin-bottom:20px; margin-top: 10px;}.promo-code-input{width:100%;height:48px;padding:0 16px;border:1px solid #3a4352;border-radius:10px;background:linear-gradient(120deg, #1F1F1F, #111214);color:#fff;font:inherit;font-size:16px;box-sizing:border-box;outline:none}.promo-code-input::placeholder{color:#b7bec9}.promo-code-input:focus{border-color:var(--color-primary);box-shadow:0 0 0 2px rgba(255,214,75,.12)}";
 document.head.appendChild(promoCodeStyle);
 
 
@@ -1174,12 +1332,7 @@ function setMethod(id) {
     // including the Amount section.
     clearValidationHighlights();
 
-    const oldNotice = $("#submitValidation");
-    if (oldNotice) {
-        oldNotice.dataset.attempted = "false";
-        oldNotice.innerHTML = "";
-        oldNotice.classList.remove("show");
-    }
+    document.body.dataset.validationAttempted = "false";
 
     state.method = id;
     state.filter = "all";
@@ -1199,12 +1352,7 @@ function setMethod(id) {
     // from the previous payment method.
     clearValidationHighlights();
 
-    const newNotice = $("#submitValidation");
-    if (newNotice) {
-        newNotice.dataset.attempted = "false";
-        newNotice.innerHTML = "";
-        newNotice.classList.remove("show");
-    }
+    document.body.dataset.validationAttempted = "false";
 }
 function selectChannel(id) {
     if (channels[id].disabled) {
@@ -1308,12 +1456,11 @@ function validate() {
     btn.removeAttribute("aria-disabled");
 
     const errors = validateDepositRequirements();
-    const notice = $("#submitValidation");
 
-    // If the player has already tried to continue, keep the notice updated.
-    // Once everything is complete, remove the notice automatically.
-    if (notice && notice.dataset.attempted === "true") {
-        renderInlineValidation(errors);
+    // After Continue is pressed, keep only the relevant controls/cards
+    // highlighted. No validation alert text is shown below the button.
+    if (document.body.dataset.validationAttempted === "true") {
+        applyValidationHighlights(errors);
     }
 }
 
@@ -1353,6 +1500,15 @@ function applyValidationHighlights(errors) {
         if (!selector || seen.has(selector)) return;
         seen.add(selector);
 
+        // Package validation is applied to EACH package card rather than
+        // the whole Select a Package container.
+        if (selector === "#depositPackageSelection") {
+            document.querySelectorAll("#depositPackageSelection .deposit-bonus-card").forEach(card => {
+                card.classList.add("validation-missing");
+            });
+            return;
+        }
+
         const target = $(selector);
         if (!target) return;
 
@@ -1391,29 +1547,16 @@ function focusFirstMissingSection(errors) {
 }
 
 function renderInlineValidation(errors) {
-    const notice = $("#submitValidation");
-    if (!notice) return;
-
-    notice.dataset.attempted = "true";
+    // Validation feedback is visual only: highlight the exact missing
+    // control(s), with every package card highlighted when no package
+    // has been selected. No alert/list is displayed below Continue.
+    document.body.dataset.validationAttempted = "true";
+    applyValidationHighlights(errors);
 
     if (!errors || !errors.length) {
-        notice.innerHTML = "";
-        notice.classList.remove("show");
+        document.body.dataset.validationAttempted = "false";
         clearValidationHighlights();
-        return;
     }
-
-    notice.innerHTML = `
-        <div class="submit-validation-title">⚠ Please complete the following:</div>
-        <ul>
-            ${errors.map(error => {
-                const target = getValidationTarget(error);
-                return `<li>${target ? `<button type="button" class="validation-link" onclick="focusValidationSection('${target}')">${error}</button>` : error}</li>`;
-            }).join("")}
-        </ul>
-    `;
-    notice.classList.add("show");
-    applyValidationHighlights(errors);
 }
 
 function focusValidationSection(selector) {
@@ -1466,8 +1609,8 @@ function submitDeposit() {
     let btn = $("#submitBtn");
     const errors = validateDepositRequirements();
 
-    // Show all missing requirements directly underneath the button.
-    // Do not use a toast and do not block the button with disabled state.
+    // Show validation visually on the exact missing controls/cards only.
+    // Do not display an alert/list underneath the Continue button.
     if (errors.length) {
         renderInlineValidation(errors);
         focusFirstMissingSection(errors);
@@ -1603,7 +1746,7 @@ function initDepositHelp() {
     wrap.appendChild(icon);
 }
 const depositHelpStyle = document.createElement("style");
-depositHelpStyle.textContent = `.deposit-title-with-help{display:inline-flex;align-items:center;gap:9px}.deposit-title-with-help h1,.deposit-title-with-help h2,.deposit-title-with-help h3{margin-right:0}.deposit-help{position:relative;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;cursor:help;vertical-align:middle}.deposit-help img{width:22px;height:22px;display:block;cursor: pointer;filter: brightness(0) invert(1);}.deposit-help>span{position:absolute;left:32px;top:50%;transform:translateY(-50%);background:#baab68;color:#000;padding:7px 11px;border-radius:6px;font-size:13px;font-weight:500;line-height:1.2;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease;z-index:1000}.deposit-help:hover>span{opacity:1;visibility:visible}`;
+depositHelpStyle.textContent = `.deposit-title-with-help{display:inline-flex;align-items:center;gap:9px}.deposit-title-with-help h1,.deposit-title-with-help h2,.deposit-title-with-help h3{margin-right:0}.deposit-help{position:relative;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;cursor:help;vertical-align:middle}.deposit-help img{width:15px;height:15px;display:block;cursor: pointer;filter: brightness(0) invert(1);}.deposit-help>span{position:absolute;left:32px;top:50%;transform:translateY(-50%);background:#baab68;color:#000;padding:7px 11px;border-radius:6px;font-size:13px;font-weight:500;line-height:1.2;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease;z-index:1000}.deposit-help:hover>span{opacity:1;visibility:visible}`;
 document.head.appendChild(depositHelpStyle);
 
 /* Bank In Transfer searchable dropdown */
@@ -1710,3 +1853,7 @@ option.style.display=option.textContent.toLowerCase().includes(keyword)?"block":
 const receivingBankDropdownStyle=document.createElement("style");
 receivingBankDropdownStyle.textContent=`.receiving-bank-select-wrap{position:relative;width:100%}#receivingBankDropdown{z-index:5000}#receivingBankOptions{max-height:230px;overflow-y:auto}.receiving-bank-option{display:block;width:100%;min-height:42px;padding:10px 12px;border:0;background:#fff;color:#2c3540;text-align:left;font-size:14px;cursor:pointer;box-sizing:border-box}.receiving-bank-option:hover,.receiving-bank-option.selected{background:#2d68bd;color:#fff}`;
 document.head.appendChild(receivingBankDropdownStyle);
+
+
+
+
