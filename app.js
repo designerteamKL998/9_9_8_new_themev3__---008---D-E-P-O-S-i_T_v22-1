@@ -387,7 +387,7 @@ let state = {
     filter: "all",
     amount: "",
     bank: "",
-    package: "",
+    package: "No Bonus",
     cryptoNetwork: "",
     walletPayment: "",
     promoCode: "",
@@ -493,33 +493,23 @@ function movePackageBelowPaymentChannel() {
 
     if (!packageArea || !channelGrid) return;
 
-    // MOBILE ONLY
-    // Do not move Package to Payment Channel first,
-    // because that causes the flashing effect.
-    if (window.matchMedia("(max-width: 768px)").matches) {
+    // Bank In Transfer: keep the natural order:
+    // Select a Package -> Choose a receiving bank -> Amount.
+    if (state.method === "bank") return;
 
+    // Mobile: keep the existing behavior for the other methods.
+    if (window.matchMedia("(max-width: 768px)").matches) {
         setTimeout(() => {
-            if (
-                bankArea &&
-                bankArea.innerHTML.trim() !== ""
-            ) {
-                bankArea.insertAdjacentElement(
-                    "afterend",
-                    packageArea
-                );
+            if (bankArea && bankArea.innerHTML.trim() !== "") {
+                bankArea.insertAdjacentElement("afterend", packageArea);
             } else {
-                channelGrid.insertAdjacentElement(
-                    "afterend",
-                    packageArea
-                );
+                channelGrid.insertAdjacentElement("afterend", packageArea);
             }
         }, 0);
-
         return;
     }
 
-    // DESKTOP ONLY
-    // Keep original position.
+    // Desktop: other methods keep Payment Channel -> Package.
     channelGrid.insertAdjacentElement("afterend", packageArea);
 }
 
@@ -595,17 +585,13 @@ function renderChannels() {
     movePackageBelowPaymentChannel();
 
     if(state.method==="bank"){
-        $("#channelTitle").textContent="Choose a receiving bank";
-        $("#channelSubtitle").textContent="";
+        $("#channelTitle").innerHTML = `Choose a receiving bank`;
+        $("#channelSubtitle").textContent = "";
         $("#filterBtn").classList.add("hidden");
         $("#filterRow").classList.add("hidden");
 
-        const bankArea = $("#bankArea");
-        if (bankArea) bankArea.innerHTML = `
-
-        ${state.bank?bankAccountDetails():""}
-    `;
-
+        // Bank In Transfer has no payment-channel selection.
+        // The receiving-bank selector is rendered by renderSummary().
         $("#channelGrid").innerHTML = "";
         return;
     }
@@ -1182,72 +1168,120 @@ function setCryptoNetwork(network) {
     renderForm();
 }
 function renderSummary() {
+    const provider = $("#providerSummary");
+    if (!provider) return;
+
+    // BANK IN TRANSFER:
+    // Show receiving-bank choices in the LEFT column.
+    // Package remains above this section because #packageArea is already
+    // before #channelGrid in index.html.
     if (state.method === "bank") {
-
-        $("#channelTitle").innerHTML =
-       `Choose a receiving bank`;
-
+        $("#channelTitle").innerHTML = `Choose a receiving bank`;
         $("#filterBtn").classList.add("hidden");
         $("#filterRow").classList.add("hidden");
 
         $("#channelGrid").innerHTML = `
-        <div class="bank-selector">
-            <div class="bank-option-tabs">
-
-                ${bankTransferOptions.map(bank => `
-                    <button
-                        type="button"
-                        class="bank-tile ${
-                            state.bank === bank
-                                ? "selected"
-                                : ""
-                }"
-                        onclick="chooseBank('${bank}')"
-                    >
-
-                        <img
-                            src="${getBankIcon(bank)}"
-                            alt="${bank}"
+            <div class="bank-selector">
+                <div class="bank-option-tabs">
+                    ${bankTransferOptions.map(bank => `
+                        <button
+                            type="button"
+                            class="bank-tile ${state.bank === bank ? "selected" : ""}"
+                            onclick="chooseBank('${bank}')"
+                            aria-selected="${state.bank === bank ? "true" : "false"}"
                         >
-
-                        <span>${bank.toUpperCase()}</span>
-
-                    </button>
-                `).join("")}
-
+                            <img src="${getBankIcon(bank)}" alt="${bank}">
+                            <span>${bank.toUpperCase()}</span>
+                        </button>
+                    `).join("")}
+                </div>
+                <p class="bank-helper">
+                    Select the bank you will use for this transfer.
+                </p>
             </div>
+        `;
 
-            <p class="bank-helper">
-                Select the bank you will use for this transfer.
-            </p>
-        </div>
-    `;
+        provider.classList.add("hidden");
+        provider.innerHTML = "";
 
+        // Pay To details stay on the RIGHT after a receiving bank is chosen.
+        const bankArea = $("#bankArea");
+        if (bankArea) {
+            bankArea.innerHTML = state.bank ? bankAccountDetails() : "";
+        }
         return;
     }
-    let c = channels[state.channel],
-        logo = c.logo ? `<img src="${c.logo}" alt="${c.name}logo">` : c.mark;
-    $("#providerSummary").classList.add("hidden");
+
+    // No payment channel selected on the default Deposit page.
+    // Do not access channels[""], otherwise render() stops before Amount.
+    if (!state.channel || !channels[state.channel]) {
+        provider.classList.add("hidden");
+        provider.innerHTML = "";
+        return;
+    }
+
+    const c = channels[state.channel];
+    provider.classList.add("hidden");
+
+    let logo = c.logo
+        ? `<img src="${c.logo}" alt="${c.name}logo">`
+        : c.mark;
+
     let methodLine = "";
-    if (state.method === "online" && state.bank)
-        methodLine = `<p class="provider-method"><img src="${getBankIcon(state.bank)}" alt="${state.bank}" class="summary-bank-icon"><span>${state.bank}</span></p>`;
-    else if (
+
+    if (state.method === "online" && state.bank) {
+        methodLine =
+            `<p class="provider-method">
+                <img src="${getBankIcon(state.bank)}" alt="${state.bank}" class="summary-bank-icon">
+                <span>${state.bank}</span>
+            </p>`;
+    } else if (
         (state.method === "wallet" || state.method === "qr") &&
-        (state.channel === "vaderpayc1" || state.channel === "vaderpayc2" || state.channel === "eziepay")
-    )
-        methodLine = `<p class="provider-method"><img src="${getWalletPaymentIcon(state.walletPayment)}" alt="${getWalletPaymentName(state.walletPayment)}" class="duitnow-summary-icon"><span>${getWalletPaymentName(state.walletPayment)}</span></p>`;
-    else if (state.method === "crypto" && state.cryptoNetwork)
-        methodLine = `<p class="provider-method"><img src="assets/${state.cryptoNetwork === "TRC20-USDT" ? "tether.svg" : "ethereum.svg"}" alt="${state.cryptoNetwork}" class="crypto-summary-icon"><span>${state.cryptoNetwork}</span></p>`;
-    else if (state.channel === "vaderpayc1" || state.channel === "vaderpayc2")
-        methodLine = `<p class="provider-method"><img src="assets/duitNow.svg" alt="DuitNow" class="duitnow-summary-icon"><span>DuitNow QR · Instant</span></p>`;
-    $("#providerSummary").innerHTML =
-        `<div class="large-logo ${c.logo ? "image-logo" : ""}">${logo}</div><div><h2>${c.name}</h2>${methodLine}</div>`;
+        (state.channel === "vaderpayc1" ||
+         state.channel === "vaderpayc2" ||
+         state.channel === "eziepay")
+    ) {
+        methodLine =
+            `<p class="provider-method">
+                <img src="${getWalletPaymentIcon(state.walletPayment)}"
+                     alt="${getWalletPaymentName(state.walletPayment)}"
+                     class="duitnow-summary-icon">
+                <span>${getWalletPaymentName(state.walletPayment)}</span>
+            </p>`;
+    } else if (state.method === "crypto" && state.cryptoNetwork) {
+        methodLine =
+            `<p class="provider-method">
+                <img src="assets/${state.cryptoNetwork === "TRC20-USDT" ? "tether.svg" : "ethereum.svg"}"
+                     alt="${state.cryptoNetwork}"
+                     class="crypto-summary-icon">
+                <span>${state.cryptoNetwork}</span>
+            </p>`;
+    } else if (
+        state.channel === "vaderpayc1" ||
+        state.channel === "vaderpayc2"
+    ) {
+        methodLine =
+            `<p class="provider-method">
+                <img src="assets/duitNow.svg"
+                     alt="DuitNow"
+                     class="duitnow-summary-icon">
+                <span>DuitNow QR · Instant</span>
+            </p>`;
+    }
+
+    provider.innerHTML =
+        `<div class="large-logo ${c.logo ? "image-logo" : ""}">${logo}</div>
+         <div>
+            <h2>${c.name}</h2>
+            ${methodLine}
+         </div>`;
 }
+
 function field(label, content) {
     return `<label class="form-label">${label}</label>${content}`;
 }
 function amountBlock(c) {
-    return `${field(`Amount`, `<div class="amount-wrap"><span class="currency">MYR</span><input id="amount"inputmode="decimal"placeholder="0"value="${state.amount}"oninput="setAmount(this.value)"></div><div id="amountHelp"class="input-help">Per transaction: ${money(c.min)}–${money(c.max)}</div>`)}<div class="quick-amounts">${[20, 50, 100, 200, 500, 1000].map((v) => `<button onclick="quickAmount(${v})">MYR ${v}</button>`).join("")}</div>`;
+    return `${field(`Amount`, `<div class="amount-wrap"><span class="currency">MYR</span><input id="amount" inputmode="decimal" placeholder="0" value="${state.amount}" oninput="setAmount(this.value)"></div><div id="amountHelp"class="input-help">Per transaction: ${money(c.min)}–${money(c.max)}</div>`)}<div class="quick-amounts">${[20, 50, 100, 200, 500, 1000].map((v) => `<button onclick="quickAmount(${v})">MYR ${v}</button>`).join("")}</div>`;
 }
 function setPromoCode(value) {
     // Promo codes are entered by the player and handled by the backend.
@@ -1271,28 +1305,74 @@ function promoCodeBlock() {
 }
 
 function renderForm() {
-    let c = channels[state.channel],
-        specific = "";
-    if (state.channel === "banktransfer")
-        specific = `${amountBlock(c)}${field("Transfer receipt (optional)", `<div class="upload-box"><div class="upload-info"><span>A receipt may help us process your request faster.</span><small>JPG, PNG, or PDF · Maximum 10MB</small></div><label>Select file<input type="file"onchange="showToast('Transfer receipt selected')"></label></div>`)}`;
-   
-    else {
-        let warning =
-            state.channel === "eziepay"
-                ? `<div class="notice"><b>!</b><span>This channel has a ${money(500)} maximum per transaction. Choose another channel for a higher amount.</span></div>`
-                : "";
-        specific = `${warning}${amountBlock(c)}`;
+    const form = $("#dynamicForm");
+    if (!form) return;
+
+    /*
+      DEFAULT DEPOSIT PAGE
+      --------------------
+      Online Transfer is selected by default.
+      No payment channel is auto-selected.
+      The Amount section must still be visible on the right.
+    */
+    const defaultOnlineTransfer = {
+        name: "Online Transfer",
+        min: 5,
+        max: 50000
+    };
+
+    const c = state.channel && channels[state.channel]
+        ? channels[state.channel]
+        : defaultOnlineTransfer;
+
+    let specific = "";
+
+    if (state.method === "bank") {
+        specific =
+            amountBlock(c) +
+            field(
+                "Transfer receipt (optional)",
+                `<div class="upload-box">
+                    <div class="upload-info">
+                        <span>A receipt may help us process your request faster.</span>
+                        <small>JPG, PNG, or PDF · Maximum 10MB</small>
+                    </div>
+                    <label>
+                        Select file
+                        <input type="file" onchange="showToast('Transfer receipt selected')">
+                    </label>
+                </div>`
+            );
+    } else {
+        let warning = state.channel === "eziepay"
+            ? `<div class="notice">
+                <b>!</b>
+                <span>This channel has a ${money(500)} maximum per transaction.
+                Choose another channel for a higher amount.</span>
+               </div>`
+            : "";
+
+        specific = warning + amountBlock(c);
     }
+
     const label =
         state.channel === "banktransfer"
             ? "Submit transfer request"
             : state.channel === "usdt"
-              ? "Continue"
-              : `Continue with ${c.name}`;
-    $("#dynamicForm").innerHTML =
-        `${specific}${promoCodeBlock()}<button id="submitBtn" type="button" class="primary-button" onclick="submitDeposit()">${label}</button>`;
+                ? "Continue"
+                : state.channel
+                    ? `Continue with ${c.name}`
+                    : "Continue";
+
+    form.innerHTML =
+        specific +
+        promoCodeBlock() +
+        `<button id="submitBtn" type="button" class="primary-button"
+                 onclick="submitDeposit()">${label}</button>`;
+
     validate();
 }
+
 const paymentFormAlignmentStyle = document.createElement("style");
 paymentFormAlignmentStyle.textContent =
     ".deposit-layout{align-items:start}.channel-area,.dynamic-form{}#channelGrid,#paymentChannelSelection{margin:0}#depositPackageSelection{margin-top:28px}";
